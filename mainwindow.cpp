@@ -66,12 +66,12 @@ void MainWindow::initial()
     display_note = new QAction(tr("&display/hide note"), this);
     OptMenu->addAction(display_note);
 
-    Template = menuBar()->addMenu(tr("&Tamplate"));
+    Template = menuBar()->addMenu(tr("&Template"));
 
-    new_grocery = new QAction(tr("&new grocery"),this);
+    new_grocery = new QAction(tr("&New Grocery List"),this);
     Template->addAction(new_grocery);
 
-    new_week_task = new QAction(tr("&new_week_task"),this);
+    new_week_task = new QAction(tr("&New Weekly Task"),this);
     Template->addAction(new_week_task);
 
 
