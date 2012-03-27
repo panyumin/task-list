@@ -68,10 +68,10 @@ void MainWindow::initial()
 
     Template = menuBar()->addMenu(tr("&Template"));
 
-    new_grocery = new QAction(tr("&New Grocery List"),this);
+    new_grocery = new QAction(tr("&Groceries"),this);
     Template->addAction(new_grocery);
 
-    new_week_task = new QAction(tr("&New Weekly Task"),this);
+    new_week_task = new QAction(tr("&Weekly Task"),this);
     Template->addAction(new_week_task);
 
 
