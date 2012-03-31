@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "sync_widget.h"
 #include <QtGui>
 #include <QWidget>
 #include <QDebug>
@@ -8,6 +9,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
     my_task_list = new task_list;
+    my_sync_widget = new sync_widget(this, Qt::Popup | Qt::Dialog);
 
     initial();
     setWindowTitle("Task List");
@@ -19,34 +21,48 @@ MainWindow::~MainWindow()
     delete my_task_list;
 }
 
+void MainWindow::syncClick(){
+    my_sync_widget->show();
+}
+
 void MainWindow::initial()
 {
-    fileMenu = menuBar()->addMenu(tr("&file"));
+    my_sync_widget->setWindowModality(Qt::WindowModal);
+    my_sync_widget->hide();
+    connect(my_sync_widget, SIGNAL(getSaveFile(QString&)), this, SLOT(syncSaveFile(QString&)));
 
-    loadAction = new QAction(tr("&Load XML"), this);
-    fileMenu->addAction(loadAction);
-    connect(loadAction, SIGNAL(triggered()),
-            this, SLOT(loadFile()));
+    fileMenu = menuBar()->addMenu(tr("&File"));
 
-    saveAction = new QAction( tr("&Save XML"), this );
-    fileMenu->addAction(saveAction);
-    connect(saveAction, SIGNAL(triggered()),
-            this, SLOT(saveFile()));
-
-    saveAsAction = new QAction( tr("&Save as..."), this );
-    fileMenu->addAction(saveAsAction);
-    connect(saveAsAction, SIGNAL(triggered()),
-            this, SLOT(saveasFile()));
-
-    fileMenu->addSeparator();
-    newList = new QAction( tr("&New lists"), this );
+    newList = new QAction( tr("&New lists..."), this );
+    newList->setShortcuts(QKeySequence::New);
     fileMenu->addAction(newList);
     connect(newList, SIGNAL(triggered()),
             this->my_task_list,SLOT(new_list()));
 
     fileMenu->addSeparator();
+    loadAction = new QAction(tr("&Open XML..."), this);
+    loadAction->setShortcuts(QKeySequence::Open);
+    fileMenu->addAction(loadAction);
+    connect(loadAction, SIGNAL(triggered()),
+            this, SLOT(loadFile()));
+
+    saveAction = new QAction( tr("&Save..."), this );
+    saveAction->setShortcuts(QKeySequence::Save);
+    fileMenu->addAction(saveAction);
+    connect(saveAction, SIGNAL(triggered()),
+            this, SLOT(saveFile()));
+
+    saveAsAction = new QAction( tr("&Save as..."), this );
+    saveAsAction->setShortcuts(QKeySequence::SaveAs);
+    fileMenu->addAction(saveAsAction);
+    connect(saveAsAction, SIGNAL(triggered()),
+            this, SLOT(saveasFile()));
+
+    fileMenu->addSeparator();
+
 
     printAction = new QAction(tr("&Print"),this);
+    printAction->setShortcuts(QKeySequence::Print);
     fileMenu->addAction(printAction);
     connect(printAction, SIGNAL(triggered()),
             this,SLOT(print()));
@@ -60,10 +76,10 @@ void MainWindow::initial()
 
     OptMenu = menuBar()->addMenu(tr("&Options"));
 
-    change_font = new QAction(tr("&change font"),this);
+    change_font = new QAction(tr("&Change Font"),this);
     OptMenu->addAction(change_font);
 
-    display_note = new QAction(tr("&display/hide note"), this);
+    display_note = new QAction(tr("&Display/Hide Note"), this);
     OptMenu->addAction(display_note);
 
     Template = menuBar()->addMenu(tr("&Template"));
@@ -74,6 +90,16 @@ void MainWindow::initial()
     new_week_task = new QAction(tr("&Weekly Task"),this);
     Template->addAction(new_week_task);
 
+    Sync = menuBar()->addMenu(tr("&Sync Menu"));
+
+    new_service = new QAction(tr("&Add Service"), this);
+    Sync->addAction(new_service);
+    sync_service = new QAction(tr("&Sync Services"), this);
+    Sync->addAction(sync_service);
+    send_service = new QAction(tr("&Send Files"), this);
+    Sync->addAction(send_service);
+    get_service = new QAction(tr("&Get Files"), this);
+    Sync->addAction(get_service);
 
     addTask = new QPushButton( tr("Add Task") );
     delTask = new QPushButton( tr("Delete") );
@@ -174,7 +200,15 @@ void MainWindow::initial()
     connect(new_week_task, SIGNAL(triggered()),
             this->my_task_list, SLOT(week_task()));
 
+    connect(new_service, SIGNAL(triggered()),
+            this, SLOT(syncClick()));
 
+    connect(sync_service, SIGNAL(triggered()),
+            this->my_sync_widget, SLOT(syncFiles()));
+    connect(send_service, SIGNAL(triggered()),
+            this->my_sync_widget, SLOT(sendFiles()));
+    connect(get_service, SIGNAL(triggered()),
+            this->my_sync_widget, SLOT(getFiles()));
 
 }
 
@@ -212,6 +246,24 @@ void MainWindow::saveFile()
             this->my_task_list->writeXml(fileName);
         }
     }
+}
+
+void MainWindow::syncSaveFile(QString &syncPathName)
+{
+    if(this->my_task_list->file_location!="")
+    {
+        this->my_task_list->writeXml(this->my_task_list->file_location);
+    }
+    else
+    {
+        QString fileName = QFileDialog::getSaveFileName(this);
+        if (!fileName.isEmpty())
+        {
+            this->my_task_list->writeXml(fileName);
+        }
+    }
+
+    syncPathName = this->my_task_list->file_location;
 }
 
 void MainWindow::print()

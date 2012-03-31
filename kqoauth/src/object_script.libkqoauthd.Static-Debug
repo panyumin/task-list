@@ -1,0 +1,13 @@
+CREATE ..\lib\libkqoauthd.a
+ADDMOD tmp\kqoauthmanager.o
+ADDMOD tmp\kqoauthrequest.o
+ADDMOD tmp\kqoauthutils.o
+ADDMOD tmp\kqoauthauthreplyserver.o
+ADDMOD tmp\kqoauthrequest_1.o
+ADDMOD tmp\kqoauthrequest_xauth.o
+ADDMOD tmp\moc_kqoauthmanager.o
+ADDMOD tmp\moc_kqoauthrequest.o
+ADDMOD tmp\moc_kqoauthrequest_xauth.o
+ADDMOD tmp\moc_kqoauthauthreplyserver.o
+ADDMOD tmp\moc_kqoauthauthreplyserver_p.o
+SAVE
