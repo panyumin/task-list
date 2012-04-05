@@ -1,20 +1,95 @@
 #include "sync_widget.h"
-#include <QtKOAuth>
 #include <QString>
 #include <QtGui>
 #include <QStringList>
+#include <Parser>
+#include <QUdpSocket>
+#include "oauth_helper.h"
+#include "simpleoauth_export.h"
+#include "service.h"
+#include "tasklist.h"
+#include "tasklistcollection.h"
+#include <QMutexLocker>
+#include <QMutex>
+#include <QWaitCondition>
+
+QMutex mutex;
+QWaitCondition fileReqOut;
 
 QString apiReqUrl, apiAuthUrl, apiAccTokUrl;
 QString apiConsKey, apiConsSecretKey;
+QString apiConsKeyGoogle, apiConsSecretKeyGoogle;
+QString apiKeyGoogle;
 QString saveFilePath;
 
 QStringList syncFileList;
 
 QString oauthKey, oauthSecretKey;
+QString oauthKeyGoogle, oauthSecretKeyGoogle;
+
+OAuth::Token googleAuth;
+OAuth::Token dboxAuth;
 bool waitAccess;
 
 void sync_widget::googleClick(){
+
+    apiReqUrl = "https://www.google.com/accounts/OAuthGetRequestToken";
+    apiAuthUrl = "https://www.google.com/accounts/OAuthAuthorizeToken";
+    apiAccTokUrl = "https://www.google.com/accounts/OAuthGetAccessToken";
+
+    apiConsKeyGoogle = "545441427334.apps.googleusercontent.com";
+    apiConsSecretKeyGoogle = "hLrL0maDoBGkvIsnSYQLx2Hm";
+    apiKeyGoogle = "AIzaSyCyETZ3-DhV09n7X10CoKiDkXzlMukADA8";
+
+
+    connect(m_oauthHelper, SIGNAL(requestTokenReceived(OAuth::Token)), this, SLOT(requestTokenReceived(OAuth::Token)));
+    connect(m_oauthHelper, SIGNAL(accessTokenReceived(OAuth::Token)), this, SLOT(accessTokenReceived(OAuth::Token)));
+
+    OAuth::Token tempToken;
+    tempToken.setConsumerKey("anonymous");
+    tempToken.setConsumerSecret("anonymous");
+    tempToken.setCallbackUrl(QUrl("oob"));
+    tempToken.setService("google");
+
+    m_oauthHelper->getRequestToken(tempToken, QUrl(apiReqUrl + "?scope=https://www.googleapis.com/auth/tasks"));
+
     this->close();
+}
+
+void sync_widget::requestTokenReceived(OAuth::Token token){
+    if (token.type() == OAuth::Token::RequestToken){
+        qDebug() << "Retrieved request token";
+        m_oauthHelper->getUserAuthorization(token, QUrl(apiAuthUrl));
+
+        bool ok;
+        QString text = QInputDialog::getText(this, tr("Enter Verifier Code"), tr("Verifier:"), QLineEdit::Normal, "", &ok);
+        if(ok){
+            token.setVerifier(text);
+            m_oauthHelper->getAccessToken(token, QUrl(apiAccTokUrl));
+        }
+    }
+    else
+        qDebug() << "Error in retrieving the request token";
+}
+
+void sync_widget::accessTokenReceived(OAuth::Token token){
+    if (token.type() == OAuth::Token::AccessToken){
+        qDebug() << "access success";
+        oauthKeyGoogle = token.tokenString();
+        oauthSecretKeyGoogle = token.tokenSecret();
+
+        qDebug() << "Access tokens now stored. You are ready to send task requests from user's account!";
+        qDebug() << "oauth token: " << oauthKeyGoogle;
+        qDebug() << "oauth secret token: " << oauthSecretKeyGoogle;
+
+
+        setupGTasks();
+        getAllTaskslists();
+    }
+    else
+        qDebug() << "access failure";
+    disconnect(m_oauthHelper, SIGNAL(requestTokenReceived(OAuth::Token)), this, SLOT(requestTokenReceived(OAuth::Token)));
+    disconnect(m_oauthHelper, SIGNAL(accessTokenReceived(OAuth::Token)), this, SLOT(accessTokenReceived(OAuth::Token)));
 }
 
 void sync_widget::dboxClick(){
@@ -24,28 +99,10 @@ void sync_widget::dboxClick(){
 
     apiConsKey = "jq85j637n7ph3eu";
     apiConsSecretKey = "j4sitl56kgcl7ov";
-    oauthManager->serviceType = "dbox";
 
     waitAccess = false;
     this->getAccess();
-
-
     this->close();
-
-//    QMessageBox *myMsgBox = new QMessageBox(this);
-
-//    myMsgBox->exec();
-//    QVBoxLayout *myMsgWin = new QVBoxLayout();
-//    QPushButton *myMsgBut = new QPushButton("Authorized");
-//    myMsgWin->addWidget(myMsgBut);
-//    myMsgWin->activate();
-//    QMainWindow *myMsgWindow = new QMainWindow(this, 0);
-//    QWidget *tempWidget = new QWidget();
-//    tempWidget->setLayout(myMsgWin);
-//    myMsgWindow->setCentralWidget(tempWidget);
-//    myMsgWindow->show();
-
-    //connect(myMsgBut, SIGNAL(clicked()), this, SLOT(myAuthorizationReceived()));
 }
 
 void sync_widget::syncFiles() {
@@ -61,72 +118,56 @@ void sync_widget::getFiles() {
 }
 
 void sync_widget::getAccess()  {
-    connect(oauthManager, SIGNAL(temporaryTokenReceived(QString,QString)),
-            this, SLOT(onTemporaryTokenReceived(QString, QString)));
+    connect(m_oauthHelper, SIGNAL(requestTokenReceived(OAuth::Token)), this, SLOT(onTemporaryTokenReceived(OAuth::Token)));
+    connect(m_oauthHelper, SIGNAL(accessTokenReceived(OAuth::Token)), this, SLOT(onAccessTokenReceived(OAuth::Token)));
 
-    connect(oauthManager, SIGNAL(authorizationReceived(QString,QString)),
-            this, SLOT( onAuthorizationReceived(QString, QString)));
+    OAuth::Token tempToken;
 
-    connect(oauthManager, SIGNAL(accessTokenReceived(QString,QString)),
-            this, SLOT(onAccessTokenReceived(QString,QString)));
+    tempToken.setConsumerKey(apiConsKey);
+    tempToken.setConsumerSecret(apiConsSecretKey);
+    tempToken.setService("dbox");
 
-    connect(oauthManager, SIGNAL(requestReady(QByteArray)),
-            this, SLOT(onRequestReady(QByteArray)));
-
-    oauthRequest->initRequest(KQOAuthRequest::TemporaryCredentials, QUrl(apiReqUrl));
-    oauthRequest->setSignatureMethod(KQOAuthRequest::PLAINTEXT);
-    oauthRequest->setConsumerKey(apiConsKey);
-    oauthRequest->setConsumerSecretKey(apiConsSecretKey);
-
-    oauthManager->setHandleUserAuthorization(true);
-
-    oauthManager->executeRequest(oauthRequest);
-
+    m_oauthHelper->getRequestToken(tempToken, QUrl(apiReqUrl));
 }
 
-void sync_widget::onTemporaryTokenReceived(QString token, QString tokenSecret)
+void sync_widget::onTemporaryTokenReceived(OAuth::Token token)
 {
-    qDebug() << "Temporary token received: " << token << tokenSecret;
+    qDebug() << "Temporary token received: ";
+    if (token.type() == OAuth::Token::RequestToken){
+        qDebug() << "Retrieved request token" << token.consSecret() << "& " << token.tokenSecret();
+        m_oauthHelper->getUserAuthorization(token, QUrl(apiAuthUrl));
 
-    apiAuthUrl += "&oauth_callback=" + oauthManager->serverCallbackUrl;
-    //apiAuthUrl.append(QString::number(oauthManager->callbackServer->serverPort()));
-    QUrl userAuthURL(apiAuthUrl);
+        bool ok;
+        QString text = QInputDialog::getText(this, tr("Enter when verified"), tr("Answer:"), QLineEdit::Normal, "", &ok);
+        if(ok){
+            //token.setVerifier(text);
+            m_oauthHelper->getAccessToken(token, QUrl(apiAccTokUrl));
+        }
 
-    if( oauthManager->lastError() == KQOAuthManager::NoError) {
-        qDebug() << "Asking for user's permission to access protected resources. Opening URL: " << userAuthURL;
-        oauthManager->getUserAuthorization(userAuthURL);
     }
-
+    else
+        qDebug() << "Error in retrieving the request token";
 }
 
-void sync_widget::onAuthorizationReceived(QString token, QString verifier) {
-    qDebug() << "User authorization received: " << token << verifier;
+void sync_widget::onAccessTokenReceived(OAuth::Token token) {
+    qDebug() << "Access token received: ";
 
-    oauthManager->getUserAccessTokens(QUrl(apiAccTokUrl));
-    if( oauthManager->lastError() != KQOAuthManager::NoError) {
-        qDebug() << "Error in user authorization token retrieval";
-    }
-}
-
-void sync_widget::myAuthorizationReceived() {
-    qDebug() << "User authorization received";
-
-    oauthManager->getUserAccessTokens(QUrl(apiAccTokUrl));
-    if( oauthManager->lastError() != KQOAuthManager::NoError) {
-        qDebug() << "Error in user authorization token retrieval";
-    }
-}
-
-void sync_widget::onAccessTokenReceived(QString token, QString tokenSecret) {
-    qDebug() << "Access token received: " << token << tokenSecret;
-
-    oauthKey = token;
-    oauthSecretKey = tokenSecret;
+    oauthKey = token.tokenString();
+    oauthSecretKey = token.tokenSecret();
 
     qDebug() << "Access tokens now stored. You are ready to send files from user's account!";
     qDebug() << "oauth token: " << oauthKey;
     qDebug() << "oauth secret token: " << oauthSecretKey;
 
+    dboxAuth.setType(OAuth::Token::AccessToken);
+    dboxAuth.setConsumerKey(apiConsKey);
+    dboxAuth.setConsumerSecret(apiConsSecretKey);
+    dboxAuth.setTokenString(oauthKey);
+    dboxAuth.setTokenSecret(oauthSecretKey);
+    dboxAuth.setService("dbox");
+
+    disconnect(m_oauthHelper, SIGNAL(requestTokenReceived(OAuth::Token)), this, SLOT(onTemporaryTokenReceived(OAuth::Token)));
+    disconnect(m_oauthHelper, SIGNAL(accessTokenReceived(OAuth::Token)), this, SLOT(onAccessTokenReceived(OAuth::Token)));
 }
 
 void sync_widget::onAuthorizedRequestDone() {
@@ -137,28 +178,46 @@ void sync_widget::onRequestReady(QByteArray response) {
     qDebug() << "Response from the service: " << response;
 }
 
-//void sync_widget::xauth() {
-//    connect(oauthManager, SIGNAL(accessTokenReceived(QString,QString)),
-//            this, SLOT(onAccessTokenReceived(QString,QString)));
-
-//    KQOAuthRequest_XAuth *oauthRequest = new KQOAuthRequest_XAuth(this);
-//    oauthRequest->initRequest(KQOAuthRequest::AccessToken, QUrl(apiAccTokUrl));
-//    oauthRequest->setConsumerKey(apiConsKey);
-//    oauthRequest->setConsumerSecretKey(apiConsSecretKey);
-//    oauthRequest->setXAuthLogin(/* Your username*/ /*,*/ /* Your password */);
-//    oauthManager->executeRequest(oauthRequest);
+//void sync_widget::outputResponse(QByteArray response){
+//    QFile file;
+//    file.open(stdout, QIODevice::WriteOnly);
+//    file.write(response);
+//    file.close();
+//    disconnect(oauthManager, SIGNAL(requestReady(QByteArray)),
+//            this, SLOT(outputResponse(QByteArray)));
 //}
 
-void sync_widget::outputResponse(QByteArray response){
-    QFile file;
-    file.open(stdout, QIODevice::WriteOnly);
-    file.write(response);
-    file.close();
-    disconnect(oauthManager, SIGNAL(requestReady(QByteArray)),
-            this, SLOT(outputResponse(QByteArray)));
+
+void sync_widget::sendRequest() {
+    emit getSaveFile(saveFilePath);
+
+    QFile listFile(saveFilePath);
+    QFileInfo listInfo(listFile);
+
+    QUrl m_url("https://api-content.dropbox.com/1/files_put/sandbox/"+listInfo.fileName()+"?param=val");
+    OAuth::Token::HttpMethod method = OAuth::Token::HttpPut;
+    QByteArray authHeader = dboxAuth.signRequest(m_url, OAuth::Token::HttpHeader, method);
+
+    QNetworkRequest request;
+    request.setUrl(m_url);
+    request.setRawHeader("Authorization", authHeader);
+    listFile.open(QIODevice::ReadOnly);
+    QByteArray fileData;
+    fileData.append(listFile.readAll());
+
+    m_reply = networkManager->put(request, fileData);
+
+    connect(m_reply, SIGNAL(finished()), this, SLOT(onAuthorizedRequestDone()));
+    m_reply->ignoreSslErrors();
+
+    qDebug() << "Requesting... " << request.url() << "with data " << fileData << "auth:" << request.rawHeader("Authorization");
 }
-void sync_widget::outputResponseFile(QByteArray response){
-    QFile file(syncFileList.at(0).mid(1, syncFileList.at(0).count()));
+
+void sync_widget::outputResponseFile(){
+    QByteArray response = m_reply->readAll();
+    qDebug() << "outputResponseFile - got response" << response;
+
+    QFile file(syncFileList.at(0));
     syncFileList.erase(syncFileList.begin());
     if(!file.open(QIODevice::WriteOnly))
         return;
@@ -166,104 +225,32 @@ void sync_widget::outputResponseFile(QByteArray response){
     qDebug() << file.fileName();
     file.close();
 
-    if(syncFileList.count() == 0){
-        disconnect(oauthManager, SIGNAL(requestReady(QByteArray)),
-                this, SLOT(outputResponseFile(QByteArray)));
-    }
-}
-
-void sync_widget::outputFileList(QByteArray response){
-    QString fileList(response);
-    QStringList temp = fileList.split(",");
-    for(int i = 0; i < temp.length(); i++){
-        if(temp.at(i).contains("\"path\":") &&
-                !temp.at(i).contains("\"path\": \"/\"")){
-            qDebug() << temp.at(i);
-            syncFileList << temp.at(i).mid(10,temp.at(i).length()-11);
-            qDebug() << syncFileList.at(syncFileList.size()-1);
-        }
-    }
-    disconnect(oauthManager, SIGNAL(requestReady(QByteArray)),
-            this, SLOT(outputFileList(QByteArray)));
+    m_reply->deleteLater();
+    qDebug() << "getting another file";
     getRequestFiles();
 }
 
-void sync_widget::sendRequest() {
-    emit getSaveFile(saveFilePath);
-
-    QFile listFile(saveFilePath);
-    QFileInfo listInfo(listFile);
-    //QString params = "file=" + listFile.fileName();
-    QString crlf("\r\n");
-    qsrand(QDateTime::currentDateTime().toTime_t());
-    QString b=QVariant(qrand()).toString() + QVariant(qrand()).toString() + QVariant(qrand()).toString();
-    QString boundaryStr = "---------------------------"+b;
-    QString boundary = "--" + boundaryStr + crlf;
-
-    if( oauthKey.isEmpty() ||
-        oauthSecretKey.isEmpty()) {
-        qDebug() << "No access tokens. Aborting.";
-        return;
-    }
-    oauthRequest->setSignatureMethod(KQOAuthRequest::PLAINTEXT);
-    oauthRequest->initRequest(KQOAuthRequest::AuthorizedRequest, QUrl("https://api-content.dropbox.com/1/files/sandbox/"));
-    oauthRequest->setHttpMethod(KQOAuthRequest::POST);
-    oauthRequest->setContentType("multipart/form-data; boundary=" + boundaryStr);
-    oauthRequest->setConsumerKey(apiConsKey);
-    oauthRequest->setConsumerSecretKey(apiConsSecretKey);
-    oauthRequest->setToken(oauthKey);
-    oauthRequest->setTokenSecret(oauthSecretKey);
-
-
-    KQOAuthParameters params;
-
-    listFile.open(QIODevice::ReadOnly);
-    QByteArray fileData;
-
-    listFile.objectName();
-    fileData.append(boundary.toAscii());
-    fileData.append(QString("Content-Disposition: form-data; name=\"file\"; filename=\"" + listInfo.fileName() +"\"" + crlf).toAscii());
-    fileData.append(QString("Content-Type: text/plain" + crlf + crlf).toAscii());
-    fileData.append(listFile.readAll());
-    listFile.close();
-    fileData.append(QString(crlf + "--" + boundaryStr + "--" + crlf).toAscii());
-
-    params.insert("filename", listInfo.fileName());
-    params.insert("file", listInfo.fileName());
-    oauthRequest->setAdditionalParameters(params);
-    outputResponse(oauthRequest->rawData());
-    oauthRequest->setRawData(fileData);
-    oauthManager->executeRequest(oauthRequest);
-
-    connect(oauthManager, SIGNAL(requestReady(QByteArray)),
-            this, SLOT(outputResponse(QByteArray)));
-    connect(oauthManager, SIGNAL(authorizedRequestDone()),
-            this, SLOT(onAuthorizedRequestDone()));
-}
-
 void sync_widget::getRequestFiles(){
-    if( oauthKey.isEmpty() ||
-        oauthSecretKey.isEmpty()) {
-        qDebug() << "No access tokens. Aborting.";
-        return;
+    if(syncFileList.size() != 0){
+        QUrl m_url("https://api-content.dropbox.com/1/files/sandbox/" + syncFileList.at(0));
+        OAuth::Token::HttpMethod method = OAuth::Token::HttpGet;
+        QByteArray authHeader = dboxAuth.signRequest(m_url, OAuth::Token::HttpHeader, method);
+
+        QNetworkRequest request;
+        request.setUrl(m_url);
+        request.setRawHeader("Authorization", authHeader);
+
+        m_reply = networkManager->get(request);
+        m_reply->ignoreSslErrors();
+
+        qDebug() << "Requesting... " << request.url() << "with no data auth:" << request.rawHeader("Authorization");
+
+        connect(m_reply, SIGNAL(finished()), this, SLOT(outputResponseFile()));
     }
-    connect(oauthManager, SIGNAL(requestReady(QByteArray)),
-            this, SLOT(outputResponseFile(QByteArray)));
-
-    int count = syncFileList.count();
-    for(int i = 0; i < count; i++){
-        QString fileUrl = "https://api-content.dropbox.com/1/files/sandbox/" + syncFileList.at(i);
-        oauthRequest->initRequest(KQOAuthRequest::AuthorizedRequest, QUrl(fileUrl));
-        oauthRequest->setHttpMethod(KQOAuthRequest::GET);
-        oauthRequest->setConsumerKey(apiConsKey);
-        oauthRequest->setConsumerSecretKey(apiConsSecretKey);
-        oauthRequest->setToken(oauthKey);
-        oauthRequest->setTokenSecret(oauthSecretKey);
-
-        oauthManager->executeRequest(oauthRequest);
+    else{
+        disconnect(m_reply, SIGNAL(finished()), this, SLOT(outputResponseFile()));
+        qDebug() << "no more files";
     }
-
-
 }
 
 void sync_widget::getRequest() {
@@ -276,44 +263,46 @@ void sync_widget::listFiles() {
         qDebug() << "No access tokens. Aborting.";
         return;
     }
+    QUrl m_url("https://api.dropbox.com/1/metadata/sandbox/");
+    OAuth::Token::HttpMethod method = OAuth::Token::HttpGet;
+    QByteArray authHeader = dboxAuth.signRequest(m_url, OAuth::Token::HttpHeader, method);
 
-    oauthRequest->initRequest(KQOAuthRequest::AuthorizedRequest, QUrl("https://api.dropbox.com/1/metadata/sandbox/"));
-    oauthRequest->setConsumerKey(apiConsKey);
-    oauthRequest->setConsumerSecretKey(apiConsSecretKey);
-    oauthRequest->setToken(oauthKey);
-    oauthRequest->setTokenSecret(oauthSecretKey);
+    QNetworkRequest request;
+    request.setUrl(m_url);
+    request.setRawHeader("Authorization", authHeader);
 
-    oauthManager->executeRequest(oauthRequest);
+    m_reply = networkManager->get(request);
 
-    connect(oauthManager, SIGNAL(requestReady(QByteArray)),
-            this, SLOT(outputFileList(QByteArray)));
+    connect(m_reply, SIGNAL(finished()), this, SLOT(outputFileList()));
+    m_reply->ignoreSslErrors();
+
+    qDebug() << "Requesting... " << request.url() << "with no data auth:" << request.rawHeader("Authorization");
 }
 
-//int main(int argc, char *argv[])
-//{
-//    QCoreApplication app(argc, argv);
-//    QCoreApplication::setOrganizationName("kQOAuth");
-//    QCoreApplication::setApplicationName("TwitterCLI");
+void sync_widget::outputFileList(){
+    QByteArray response = m_reply->readAll();
+    qDebug() << "outputFileList - got response" << response;
+    QJson::Parser parser;
+    bool ok;
 
-//    QStringList args = QCoreApplication::arguments();
+    QVariantMap result = parser.parse(response, &ok).toMap();
+    if(!ok){
+        qDebug() << "error in parsing json for listing";
+    }
 
-//    TwitterCLI tAuth;
-//    if(args.contains("-t")) {
-//        if(args.last() != "-t") {
-//            tAuth.sendTweet(args.last());
-//        }
-//     } else if( args.contains("-a")){
-//        tAuth.getAccess();
-//    } else if (args.contains("-x")) {
-//        tAuth.xauth();
-//    } else {
-//        tAuth.showHelp();
-//        return 0;
-//    }
+    foreach (QVariant file, result["contents"].toList()){
+        QVariantMap fileMeta = file.toMap();
+        QString temp = fileMeta["path"].toString();
+        qDebug() << "file_path" << temp;
+        temp = temp.mid(1, temp.length());
+        syncFileList << temp;
+        qDebug() << syncFileList.at(syncFileList.size()-1);
+    }
+    disconnect(m_reply, SIGNAL(finished()), this, SLOT(outputFileList()));
 
-//    return app.exec();
-
-//}
+    m_reply->deleteLater();
+    getRequestFiles();
+}
 
 
 sync_widget::sync_widget(QWidget *parent, Qt::WindowFlags f) :
@@ -330,15 +319,43 @@ sync_widget::sync_widget(QWidget *parent, Qt::WindowFlags f) :
     this->setWindowTitle("Select Service");
     this->setWindowFlags(f);
 
-    oauthRequest = new KQOAuthRequest;
-    oauthManager = new KQOAuthManager(this);
-    oauthRequest->setEnableDebugOutput(true);
-
+    myServer = new sync_server(this);
+    networkManager = new QNetworkAccessManager(this);
     connect(syncOneBut, SIGNAL(clicked()), this, SLOT(googleClick()));
     connect(syncTwoBut, SIGNAL(clicked()), this, SLOT(dboxClick()));
 }
 
 sync_widget::~sync_widget(){
-    delete oauthRequest;
-    delete oauthManager;
 }
+
+void sync_widget::setupGTasks(){
+    myGtasks = new GTasks::Service(new QNetworkAccessManager(this), this);
+    myGtasks->setApiKey(apiKeyGoogle);
+
+    googleAuth.setType(OAuth::Token::AccessToken);
+    googleAuth.setConsumerKey("anonymous");
+    googleAuth.setConsumerSecret("anonymous");
+    googleAuth.setTokenString(oauthKeyGoogle);
+    googleAuth.setTokenSecret(oauthSecretKeyGoogle);
+    googleAuth.setService("google");
+    myGtasks->setToken(googleAuth);
+}
+
+void sync_widget::getAllTaskslists(){
+    myGtasks->listTasklists().startAndCallback(this, SLOT(onTasklistsReceived(GTasks::TasklistCollection,GTasks::Error)));
+}
+
+void sync_widget::onTasklistsReceived(GTasks::TasklistCollection tasklists, GTasks::Error error){
+    if (error.code() != QNetworkReply::NoError) {
+        // Do some error handling here
+        qDebug() << "Error:" << error.code() << error.message();
+        return;
+    }
+
+    // Display the title and id of each tasklist
+    foreach (const GTasks::Tasklist& tasklist, tasklists.items()) {
+        qDebug() << "Tasklist:" << tasklist.title() << "id:" << tasklist.id();
+    }
+}
+
+

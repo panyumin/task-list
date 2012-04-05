@@ -3,9 +3,15 @@
 
 #include <QWidget>
 #include <QGridLayout>
+#include <QNetworkAccessManager>
+#include "oauth_token.h"
+#include "oauth_helper.h"
+#include "simpleoauth_export.h"
+#include "sync_server.h"
+#include "tasklistcollection.h"
+#include "error.h"
+#include "service.h"
 
-class KQOAuthManager;
-class KQOAuthRequest;
 class sync_widget : public QWidget
 {
     Q_OBJECT
@@ -20,8 +26,14 @@ public:
     void xauth();
     void getRequestFiles();
 
+    GTasks::Service *myGtasks;
+    OAuth::Helper *m_oauthHelper;
+    sync_server *myServer;
+
+
 signals:
     void getSaveFile (QString &saveFilePath);
+    void killServerConnection();
 public slots:
     void googleClick();
     void dboxClick();
@@ -30,20 +42,25 @@ public slots:
     void getFiles();
 
 private slots:
-    void outputResponse(QByteArray response);
-    void outputFileList(QByteArray response);
-    void outputResponseFile(QByteArray response);
-    void onTemporaryTokenReceived(QString temporaryToken, QString temporaryTokenSecret);
-    void onAuthorizationReceived(QString token, QString verifier);
-    void onAccessTokenReceived(QString token, QString tokenSecret);
+    //void outputResponse(QByteArray response);
+    void outputFileList();
+    void outputResponseFile();
+    void onTemporaryTokenReceived(OAuth::Token token);
+    void onAccessTokenReceived(OAuth::Token token);
     void onAuthorizedRequestDone();
     void onRequestReady(QByteArray);
-    void myAuthorizationReceived();
 
+    void requestTokenReceived(OAuth::Token token);
+    void accessTokenReceived(OAuth::Token token);
+
+    void onTasklistsReceived(GTasks::TasklistCollection tasklists, GTasks::Error error);
 private:
-    KQOAuthManager *oauthManager;
-    KQOAuthRequest *oauthRequest;
     QGridLayout *syncGrid;
+    QNetworkReply *m_reply;
+    void setupGTasks();
+    void getAllTaskslists();
+
+    QNetworkAccessManager* networkManager;
 };
 
 #endif // SYNC_WIDGET_H

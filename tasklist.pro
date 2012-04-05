@@ -6,13 +6,19 @@
 
 QT       += core gui network
 
-QT       += xml
+QT       += xml webkit
 
 TARGET = tasklist
 TEMPLATE = app
 
-INCLUDEPATH += kqoauth/include kqoauth/src
-LIBS += -Lkqoauth/lib -lkqoauthd0
+INCLUDEPATH += qjson/include/QJson qjson/src
+LIBS += -Lqjson/lib -lqjson0
+
+INCLUDEPATH += simpleoauth/include/simpleoauth simpleoauth/src
+LIBS += -Lsimpleoauth/lib -lsimpleoauth0
+
+INCLUDEPATH += gtasks/include/gtasks gtasks/src
+LIBS += -Lgtasks/lib -lgtasks0
 
 SOURCES += main.cpp\
         mainwindow.cpp \
@@ -20,6 +26,8 @@ SOURCES += main.cpp\
     task_list.cpp \
     list_dial.cpp \
     sync_widget.cpp \
+    sync_server.cpp
+
 
 
 HEADERS  += mainwindow.h \
@@ -27,45 +35,110 @@ HEADERS  += mainwindow.h \
     task_list.h \
     list_dial.h \
     sync_widget.h \
+    sync_server.h
 
 
 OTHER_FILES += \
-    kqoauth/lib/libkqoauthd0.a \
-    kqoauth/lib/kqoauthd0.dll \
-    kqoauth/lib/kqoauthd.prl \
-    kqoauth/lib/kqoauth.prl \
-    kqoauth/src/src.pro \
-    kqoauth/src/pcfile.sh \
-    kqoauth/src/object_script.libkqoauthd.Static-Debug \
-    kqoauth/src/object_script.libkqoauth.Static-Release \
-    kqoauth/src/object_script.kqoauthd.Shared-Debug \
-    kqoauth/src/object_script.kqoauth.Shared-Release \
-    kqoauth/src/Makefile.StaticRelease \
-    kqoauth/src/Makefile.StaticDebug \
-    kqoauth/src/Makefile.SharedRelease \
-    kqoauth/src/Makefile.SharedDebug \
-    kqoauth/src/Makefile \
-    kqoauth/src/kqoauthd_resource.rc \
-    kqoauth/src/kqoauth_resource.rc \
-    kqoauth/include/QtKOAuth \
-    kqoauth/src/kqoauthutils.h \
-    kqoauth/src/kqoauthrequest_xauth_p.h \
-    kqoauth/src/kqoauthrequest_xauth.h \
-    kqoauth/src/kqoauthrequest_p.h \
-    kqoauth/src/kqoauthrequest_1.h \
-    kqoauth/src/kqoauthrequest.h \
-    kqoauth/src/kqoauthmanager_p.h \
-    kqoauth/src/kqoauthmanager.h \
-    kqoauth/src/kqoauthglobals.h \
-    kqoauth/src/kqoauthauthreplyserver_p.h \
-    kqoauth/src/kqoauthauthreplyserver.h \
-    kqoauth/src/kqoauthutils.cpp \
-    kqoauth/src/kqoauthrequest_xauth.cpp \
-    kqoauth/src/kqoauthrequest_1.cpp \
-    kqoauth/src/kqoauthrequest.cpp \
-    kqoauth/src/kqoauthmanager.cpp \
-    kqoauth/src/kqoauthauthreplyserver.cpp \
-    style.qss
+    style.qss \
+    qjson/lib/qjson0.dll \
+    qjson/lib/qjson.prl \
+    qjson/lib/libqjson0.a \
+    qjson/src/src.pro \
+    qjson/src/qjson_resource.rc \
+    qjson/src/Makefile.Release \
+    qjson/src/Makefile.Debug \
+    qjson/src/Makefile \
+    qjson/src/json_parser.yy \
+    qjson/src/CMakeLists.txt \
+    qjson/src/.gitignore \
+    qjson/src/serializerrunnable.cpp \
+    qjson/src/serializer.cpp \
+    qjson/src/qobjecthelper.cpp \
+    qjson/src/parserrunnable.cpp \
+    qjson/src/parser.cpp \
+    qjson/src/json_scanner.cpp \
+    qjson/src/json_parser.cc \
+    qjson/include/QJson/Serializer \
+    qjson/include/QJson/QObjectHelper \
+    qjson/include/QJson/Parser \
+    qjson/src/stack.hh \
+    qjson/src/serializerrunnable.h \
+    qjson/src/serializer.h \
+    qjson/src/qobjecthelper.h \
+    qjson/src/qjson_export.h \
+    qjson/src/qjson_debug.h \
+    qjson/src/position.hh \
+    qjson/src/parserrunnable.h \
+    qjson/src/parser_p.h \
+    qjson/src/parser.h \
+    qjson/src/location.hh \
+    qjson/src/json_scanner.h \
+    qjson/src/json_parser.hh \
+    simpleoauth/src/src.pro \
+    simpleoauth/src/simpleoauth_resource.rc \
+    simpleoauth/src/Makefile.StaticRelease \
+    simpleoauth/src/Makefile.StaticDebug \
+    simpleoauth/src/Makefile.SharedRelease \
+    simpleoauth/src/Makefile.SharedDebug \
+    simpleoauth/src/Makefile.Release \
+    simpleoauth/src/Makefile.Debug \
+    simpleoauth/src/Makefile \
+    simpleoauth/lib/simpleoauth0.dll \
+    simpleoauth/lib/simpleoauth.prl \
+    simpleoauth/lib/libsimpleoauth0.a \
+    simpleoauth/lib/libsimpleoauth.a \
+    simpleoauth/src/oauth_token.cpp \
+    simpleoauth/src/oauth_helper.cpp \
+    simpleoauth/src/simpleoauth_export.h \
+    simpleoauth/src/oauth_token_p.h \
+    simpleoauth/src/oauth_token.h \
+    simpleoauth/src/oauth_helper.h \
+    simpleoauth/include/simpleoauth/simpleoauth_export.h \
+    simpleoauth/include/simpleoauth/oauth_token.h \
+    simpleoauth/include/simpleoauth/oauth_helper.h \
+    gtasks/lib/libgtasks0.a \
+    gtasks/lib/gtasks0.dll \
+    gtasks/lib/gtasks.prl \
+    gtasks/src/src.pro \
+    gtasks/src/object_script.gtasks.Release \
+    gtasks/src/object_script.gtasks.Debug \
+    gtasks/src/Makefile.Release \
+    gtasks/src/Makefile.Debug \
+    gtasks/src/Makefile \
+    gtasks/src/gtasks_resource.rc \
+    gtasks/src/tasklistcollection.cpp \
+    gtasks/src/tasklist.cpp \
+    gtasks/src/taskcollection.cpp \
+    gtasks/src/task.cpp \
+    gtasks/src/service.cpp \
+    gtasks/src/jobs.cpp \
+    gtasks/src/job.cpp \
+    gtasks/src/error.cpp \
+    gtasks/include/gtasks/tasklistcollection.h \
+    gtasks/include/gtasks/tasklist.h \
+    gtasks/include/gtasks/taskcollection.h \
+    gtasks/include/gtasks/task.h \
+    gtasks/include/gtasks/service.h \
+    gtasks/include/gtasks/jobs.h \
+    gtasks/include/gtasks/job.h \
+    gtasks/include/gtasks/gtasks_export.h \
+    gtasks/include/gtasks/error.h \
+    gtasks/include/gtasks/cache.h \
+    gtasks/src/tasklistcollection_p.h \
+    gtasks/src/tasklistcollection.h \
+    gtasks/src/tasklist_p.h \
+    gtasks/src/tasklist.h \
+    gtasks/src/taskcollection_p.h \
+    gtasks/src/taskcollection.h \
+    gtasks/src/task_p.h \
+    gtasks/src/task.h \
+    gtasks/src/service.h \
+    gtasks/src/jobs.h \
+    gtasks/src/job.h \
+    gtasks/src/gtasks_export.h \
+    gtasks/src/error_p.h \
+    gtasks/src/error.h \
+    gtasks/src/cache.h
 
 RESOURCES += \
     images.qrc
