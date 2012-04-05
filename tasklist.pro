@@ -138,7 +138,60 @@ OTHER_FILES += \
     gtasks/src/gtasks_export.h \
     gtasks/src/error_p.h \
     gtasks/src/error.h \
-    gtasks/src/cache.h
+    gtasks/src/cache.h \
+    gtasks/src/qjson/src.pro \
+    gtasks/src/qjson/qjson0.dll \
+    gtasks/src/qjson/qjson_resource.rc \
+    gtasks/src/qjson/qjson.prl \
+    gtasks/src/qjson/Makefile.Release \
+    gtasks/src/qjson/Makefile.Debug \
+    gtasks/src/qjson/Makefile \
+    gtasks/src/qjson/libqjson0.a \
+    gtasks/src/qjson/json_parser.yy \
+    gtasks/src/qjson/CMakeLists.txt \
+    gtasks/src/qjson/.gitignore \
+    gtasks/src/simpleoauth/src.pro \
+    gtasks/src/simpleoauth/simpleoauth0.dll \
+    gtasks/src/simpleoauth/simpleoauth_resource.rc \
+    gtasks/src/simpleoauth/simpleoauth.prl \
+    gtasks/src/simpleoauth/Makefile.StaticRelease \
+    gtasks/src/simpleoauth/Makefile.StaticDebug \
+    gtasks/src/simpleoauth/Makefile.SharedRelease \
+    gtasks/src/simpleoauth/Makefile.SharedDebug \
+    gtasks/src/simpleoauth/Makefile.Release \
+    gtasks/src/simpleoauth/Makefile.Debug \
+    gtasks/src/simpleoauth/Makefile \
+    gtasks/src/simpleoauth/libsimpleoauth0.a \
+    gtasks/src/simpleoauth/libsimpleoauth.a \
+    gtasks/src/qjson/serializerrunnable.cpp \
+    gtasks/src/qjson/serializer.cpp \
+    gtasks/src/qjson/qobjecthelper.cpp \
+    gtasks/src/qjson/parserrunnable.cpp \
+    gtasks/src/qjson/parser.cpp \
+    gtasks/src/qjson/json_scanner.cpp \
+    gtasks/src/qjson/json_parser.cc \
+    gtasks/src/simpleoauth/oauth_token.cpp \
+    gtasks/src/simpleoauth/oauth_helper.cpp \
+    gtasks/src/qjson/stack.hh \
+    gtasks/src/qjson/serializerrunnable.h \
+    gtasks/src/qjson/serializer.h \
+    gtasks/src/qjson/Serializer \
+    gtasks/src/qjson/qobjecthelper.h \
+    gtasks/src/qjson/QObjectHelper \
+    gtasks/src/qjson/qjson_export.h \
+    gtasks/src/qjson/qjson_debug.h \
+    gtasks/src/qjson/position.hh \
+    gtasks/src/qjson/parserrunnable.h \
+    gtasks/src/qjson/parser_p.h \
+    gtasks/src/qjson/parser.h \
+    gtasks/src/qjson/Parser \
+    gtasks/src/qjson/location.hh \
+    gtasks/src/qjson/json_scanner.h \
+    gtasks/src/qjson/json_parser.hh \
+    gtasks/src/simpleoauth/simpleoauth_export.h \
+    gtasks/src/simpleoauth/oauth_token_p.h \
+    gtasks/src/simpleoauth/oauth_token.h \
+    gtasks/src/simpleoauth/oauth_helper.h
 
 RESOURCES += \
     images.qrc
