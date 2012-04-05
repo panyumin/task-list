@@ -1,0 +1,13 @@
+INPUT(
+./debug\jobs.o
+./debug\job.o
+./debug\service.o
+./debug\task.o
+./debug\taskcollection.o
+./debug\tasklistcollection.o
+./debug\tasklist.o
+./debug\error.o
+./debug\moc_job.o
+./debug\moc_jobs.o
+./debug\moc_service.o
+);

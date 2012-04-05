@@ -1,0 +1,13 @@
+INPUT(
+./release\jobs.o
+./release\job.o
+./release\service.o
+./release\task.o
+./release\taskcollection.o
+./release\tasklistcollection.o
+./release\tasklist.o
+./release\error.o
+./release\moc_job.o
+./release\moc_jobs.o
+./release\moc_service.o
+);

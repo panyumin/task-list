@@ -8,9 +8,15 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
+
+
     my_task_list = new task_list;
     my_sync_widget = new sync_widget(this, Qt::Popup | Qt::Dialog);
 
+//    my_sync_widget->oauthRequest = new KQOAuthRequest(this);
+//    my_sync_widget->oauthManager = new KQOAuthManager(this);
+
+    my_sync_widget->m_oauthHelper = new OAuth::Helper(this);
     initial();
     setWindowTitle("Task List");
 
@@ -23,6 +29,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::syncClick(){
     my_sync_widget->show();
+
 }
 
 void MainWindow::initial()
