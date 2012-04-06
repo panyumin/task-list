@@ -11,6 +11,7 @@ class QListWidgetItem;
 class QCalendarWidget;
 class QCheckBox;
 class sync_widget;
+class QTimer;
 
 
 #include <QtGui/QMainWindow>
@@ -23,14 +24,21 @@ public:
     MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
+public slots:
+    void serviceAdded(QString &serviceType);
+    void openXmlRecv(QString &filename);
 private slots:
     void loadFile();
     void saveasFile();
     void saveFile();
     void syncSaveFile(QString &syncPathName);
     void print();
+    void newServiceClick();
     void syncClick();
+    void syncClickOff();
 
+signals:
+    void syncClickEmit();
 
 private:
     void initial();
@@ -62,10 +70,14 @@ private:
     QMenu *Sync;
     QAction *new_service;
     QAction *sync_service;
+    QAction *sync_service_off;
     QAction *send_service;
     QAction *get_service;
+    QAction *send_service_gtask;
+    QAction *get_service_gtask;
 
     sync_widget *my_sync_widget;
+    QTimer *syncTimer;
 };
 
 #endif // MAINWINDOW_H

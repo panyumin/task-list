@@ -29,7 +29,6 @@
 #include <QObject>
 #include <QUrl>
 
-#include "jobs.h"
 #include "simpleoauth/oauth_token.h"
 
 class QNetworkAccessManager;
