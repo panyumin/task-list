@@ -4,12 +4,13 @@
 #include <QWidget>
 #include <QDebug>
 #include <QtXml>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
 
-
+    syncTimer = new QTimer(this);
     my_task_list = new task_list;
     my_sync_widget = new sync_widget(this, Qt::Popup | Qt::Dialog);
 
@@ -27,9 +28,45 @@ MainWindow::~MainWindow()
     delete my_task_list;
 }
 
-void MainWindow::syncClick(){
+void MainWindow::newServiceClick(){
     my_sync_widget->show();
+}
 
+void MainWindow::syncClick(){
+    //if(syncTimer == NULL)
+    if(!syncTimer->isActive()){
+        syncTimer->start(30000);
+        connect(syncTimer, SIGNAL(timeout()), this, SLOT(syncClick()));
+        sync_service_off->setEnabled(true);
+    }
+    emit syncClickEmit();
+}
+
+void MainWindow::syncClickOff(){
+    syncTimer->stop();
+    disconnect(syncTimer, SIGNAL(timeout()), this, SLOT(syncClick()));
+    sync_service_off->setDisabled(true);
+}
+
+void MainWindow::serviceAdded(QString &serviceType){
+    sync_service->setEnabled(true);
+
+    if(serviceType == "dbox"){
+        send_service->setEnabled(true);
+        get_service->setEnabled(true);
+    }
+    else if(serviceType == "google")
+    {
+        send_service_gtask->setEnabled(true);
+        get_service_gtask->setEnabled(true);
+    }
+    else{
+        qDebug() << "serviceAdded - error, service not recognized";
+    }
+}
+
+void MainWindow::openXmlRecv(QString &filename){
+    this->my_task_list->loadXml(filename);
 }
 
 void MainWindow::initial()
@@ -37,6 +74,9 @@ void MainWindow::initial()
     my_sync_widget->setWindowModality(Qt::WindowModal);
     my_sync_widget->hide();
     connect(my_sync_widget, SIGNAL(getSaveFile(QString&)), this, SLOT(syncSaveFile(QString&)));
+    connect(my_sync_widget, SIGNAL(enableServiceButton(QString&)), this, SLOT(serviceAdded(QString&)));
+    connect(this, SIGNAL(syncClickEmit()), my_sync_widget, SLOT(syncFiles()));
+    connect(my_sync_widget, SIGNAL(openXml(QString&)), this, SLOT(openXmlRecv(QString&)));
 
     fileMenu = menuBar()->addMenu(tr("&File"));
 
@@ -101,12 +141,25 @@ void MainWindow::initial()
 
     new_service = new QAction(tr("&Add Service"), this);
     Sync->addAction(new_service);
-    sync_service = new QAction(tr("&Sync Services"), this);
+    sync_service = new QAction(tr("&Sync Services (On)"), this);
     Sync->addAction(sync_service);
-    send_service = new QAction(tr("&Send Files"), this);
+    sync_service_off = new QAction(tr("&Sync Services Off"), this);
+    Sync->addAction(sync_service_off);
+    send_service = new QAction(tr("&Send Current File"), this);
     Sync->addAction(send_service);
-    get_service = new QAction(tr("&Get Files"), this);
+    get_service = new QAction(tr("&Get Dropbox Files"), this);
     Sync->addAction(get_service);
+    send_service_gtask = new QAction(tr("&Send Current File (GTask)"), this);
+    Sync->addAction(send_service_gtask);
+    get_service_gtask = new QAction(tr("&Get GTask Files"), this);
+    Sync->addAction(get_service_gtask);
+
+    sync_service->setDisabled(true);
+    send_service->setDisabled(true);
+    sync_service_off->setDisabled(true);
+    get_service->setDisabled(true);
+    send_service_gtask->setDisabled(true);
+    get_service_gtask->setDisabled(true);
 
     addTask = new QPushButton( tr("Add Task") );
     delTask = new QPushButton( tr("Delete") );
@@ -208,14 +261,20 @@ void MainWindow::initial()
             this->my_task_list, SLOT(week_task()));
 
     connect(new_service, SIGNAL(triggered()),
-            this, SLOT(syncClick()));
+            this, SLOT(newServiceClick()));
 
     connect(sync_service, SIGNAL(triggered()),
-            this->my_sync_widget, SLOT(syncFiles()));
+            this, SLOT(syncClick()));
+    connect(sync_service_off, SIGNAL(triggered()),
+            this, SLOT(syncClickOff()));
     connect(send_service, SIGNAL(triggered()),
             this->my_sync_widget, SLOT(sendFiles()));
     connect(get_service, SIGNAL(triggered()),
             this->my_sync_widget, SLOT(getFiles()));
+    connect(send_service_gtask, SIGNAL(triggered()),
+            this->my_sync_widget, SLOT(sendFilesGTask()));
+    connect(get_service_gtask, SIGNAL(triggered()),
+            this->my_sync_widget, SLOT(getFilesGTask()));
 
 }
 

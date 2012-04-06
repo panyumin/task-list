@@ -450,12 +450,12 @@ void task_list::grocery()
     this->addTopLevelItem(list_name);
 
     QTreeWidgetItem* task_child;
-
+    QDate currDate = QDate::currentDate();
     //add preset items
     task_child = new QTreeWidgetItem(list_name,1);
     task_child->setText(0,"Bread");
     task_child->setText(1,"");
-    task_child->setText(2,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
     task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  | Qt::ItemIsEditable);
     list_name->addChild(task_child);
@@ -463,7 +463,7 @@ void task_list::grocery()
     task_child = new QTreeWidgetItem(list_name,1);
     task_child->setText(0,"Milk");
     task_child->setText(1,"");
-    task_child->setText(2,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
     task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  | Qt::ItemIsEditable);
     list_name->addChild(task_child);
@@ -471,7 +471,7 @@ void task_list::grocery()
     task_child = new QTreeWidgetItem(list_name,1);
     task_child->setText(0,"Apple");
     task_child->setText(1,"");
-    task_child->setText(2,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
     task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  | Qt::ItemIsEditable);
     list_name->addChild(task_child);
@@ -479,7 +479,7 @@ void task_list::grocery()
     task_child = new QTreeWidgetItem(list_name,1);
     task_child->setText(0,"Beer");
     task_child->setText(1,"");
-    task_child->setText(2,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
     task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  | Qt::ItemIsEditable);
     list_name->addChild(task_child);
@@ -487,7 +487,7 @@ void task_list::grocery()
     task_child = new QTreeWidgetItem(list_name,1);
     task_child->setText(0,"Orange juice");
     task_child->setText(1,"");
-    task_child->setText(2,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
     task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  | Qt::ItemIsEditable);
     list_name->addChild(task_child);
@@ -495,7 +495,7 @@ void task_list::grocery()
     task_child = new QTreeWidgetItem(list_name,1);
     task_child->setText(0,"Egg");
     task_child->setText(1,"");
-    task_child->setText(2,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
     task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  | Qt::ItemIsEditable);
     list_name->addChild(task_child);
@@ -503,7 +503,7 @@ void task_list::grocery()
     task_child = new QTreeWidgetItem(list_name,1);
     task_child->setText(0,"Chips");
     task_child->setText(1,"");
-    task_child->setText(2,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
     task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  | Qt::ItemIsEditable);
     list_name->addChild(task_child);
@@ -517,12 +517,13 @@ void task_list::week_task()
     this->addTopLevelItem(list_name);
 
     QTreeWidgetItem* task_child;
+    QDate currDate = QDate::currentDate();
 
     //add preset items
     task_child = new QTreeWidgetItem(list_name,1);
     task_child->setText(0,"Homework");
-    task_child->setText(1,"");
-    task_child->setText(2,"");
+    task_child->setText(1,"");   
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
     task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  | Qt::ItemIsEditable);
     list_name->addChild(task_child);
@@ -530,7 +531,7 @@ void task_list::week_task()
     task_child = new QTreeWidgetItem(list_name,1);
     task_child->setText(0,"Wash car");
     task_child->setText(1,"");
-    task_child->setText(2,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
     task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  | Qt::ItemIsEditable);
     list_name->addChild(task_child);
@@ -538,7 +539,7 @@ void task_list::week_task()
     task_child = new QTreeWidgetItem(list_name,1);
     task_child->setText(0,"Fishing");
     task_child->setText(1,"");
-    task_child->setText(2,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
     task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  | Qt::ItemIsEditable);
     list_name->addChild(task_child);
@@ -546,7 +547,7 @@ void task_list::week_task()
     task_child = new QTreeWidgetItem(list_name,1);
     task_child->setText(0,"Laundry");
     task_child->setText(1,"");
-    task_child->setText(2,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
     task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  | Qt::ItemIsEditable);
     list_name->addChild(task_child);
@@ -554,7 +555,7 @@ void task_list::week_task()
     task_child = new QTreeWidgetItem(list_name,1);
     task_child->setText(0,"Clean room");
     task_child->setText(1,"");
-    task_child->setText(2,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
     task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  | Qt::ItemIsEditable);
     list_name->addChild(task_child);
