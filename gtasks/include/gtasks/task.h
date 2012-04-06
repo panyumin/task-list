@@ -75,6 +75,7 @@ public:
 	void setNotes(const QString& notes);
 	void setStatus(Status status);
 	void setDue(const QDateTime& due);
+    void setCompleted(const QDateTime& done);
 
 private:
     friend class TaskPrivate;
