@@ -24,7 +24,7 @@ sync_server::sync_server(QWidget *parent) :
 
 void sync_server::onConnect(){
     socket = tcpServer->nextPendingConnection();
-    connect(socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()), Qt::UniqueConnection);
+    //connect(socket, SIGNAL(readyRead()), this, SLOT(onReadyRead()), Qt::UniqueConnection);
 }
 
 void sync_server::onReadyRead(){
