@@ -30,9 +30,10 @@ public slots:
 private slots:
     void loadFile();
     void saveasFile();
-    void saveFile();
-    void syncSaveFile(QString &syncPathName);
+    void saveFile();    
     void print();
+
+    void syncSaveFile(QString &syncPathName);
     void newServiceClick();
     void syncClick();
     void syncClickOff();

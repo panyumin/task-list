@@ -10,14 +10,14 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
 {
 
-    syncTimer = new QTimer(this);
+    //syncTimer = new QTimer(this);
     my_task_list = new task_list;
-    my_sync_widget = new sync_widget(this, Qt::Popup | Qt::Dialog);
+//    my_sync_widget = new sync_widget(this, Qt::Popup | Qt::Dialog);
 
 //    my_sync_widget->oauthRequest = new KQOAuthRequest(this);
 //    my_sync_widget->oauthManager = new KQOAuthManager(this);
 
-    my_sync_widget->m_oauthHelper = new OAuth::Helper(this);
+//    my_sync_widget->m_oauthHelper = new OAuth::Helper(this);
     initial();
     setWindowTitle("Task List");
 
@@ -28,7 +28,7 @@ MainWindow::~MainWindow()
     delete my_task_list;
 }
 
-void MainWindow::newServiceClick(){
+/*void MainWindow::newServiceClick(){
     my_sync_widget->show();
 }
 
@@ -67,16 +67,16 @@ void MainWindow::serviceAdded(QString &serviceType){
 
 void MainWindow::openXmlRecv(QString &filename){
     this->my_task_list->loadXml(filename);
-}
+}*/
 
 void MainWindow::initial()
 {
-    my_sync_widget->setWindowModality(Qt::WindowModal);
-    my_sync_widget->hide();
-    connect(my_sync_widget, SIGNAL(getSaveFile(QString&)), this, SLOT(syncSaveFile(QString&)));
-    connect(my_sync_widget, SIGNAL(enableServiceButton(QString&)), this, SLOT(serviceAdded(QString&)));
-    connect(this, SIGNAL(syncClickEmit()), my_sync_widget, SLOT(syncFiles()));
-    connect(my_sync_widget, SIGNAL(openXml(QString&)), this, SLOT(openXmlRecv(QString&)));
+//    my_sync_widget->setWindowModality(Qt::WindowModal);
+//    my_sync_widget->hide();
+//    connect(my_sync_widget, SIGNAL(getSaveFile(QString&)), this, SLOT(syncSaveFile(QString&)));
+//    connect(my_sync_widget, SIGNAL(enableServiceButton(QString&)), this, SLOT(serviceAdded(QString&)));
+//    connect(this, SIGNAL(syncClickEmit()), my_sync_widget, SLOT(syncFiles()));
+//    connect(my_sync_widget, SIGNAL(openXml(QString&)), this, SLOT(openXmlRecv(QString&)));
 
     fileMenu = menuBar()->addMenu(tr("&File"));
 
@@ -100,7 +100,7 @@ void MainWindow::initial()
             this, SLOT(saveFile()));
 
     saveAsAction = new QAction( tr("&Save as..."), this );
-    saveAsAction->setShortcuts(QKeySequence::SaveAs);
+    //saveAsAction->setShortcuts(QKeySequence::SaveAs);
     fileMenu->addAction(saveAsAction);
     connect(saveAsAction, SIGNAL(triggered()),
             this, SLOT(saveasFile()));
@@ -137,29 +137,29 @@ void MainWindow::initial()
     new_week_task = new QAction(tr("&Weekly Task"),this);
     Template->addAction(new_week_task);
 
-    Sync = menuBar()->addMenu(tr("&Sync Menu"));
+//    Sync = menuBar()->addMenu(tr("&Sync Menu"));
 
-    new_service = new QAction(tr("&Add Service"), this);
-    Sync->addAction(new_service);
-    sync_service = new QAction(tr("&Sync Services (On)"), this);
-    Sync->addAction(sync_service);
-    sync_service_off = new QAction(tr("&Sync Services Off"), this);
-    Sync->addAction(sync_service_off);
-    send_service = new QAction(tr("&Send Current File"), this);
-    Sync->addAction(send_service);
-    get_service = new QAction(tr("&Get Dropbox Files"), this);
-    Sync->addAction(get_service);
-    send_service_gtask = new QAction(tr("&Send Current File (GTask)"), this);
-    Sync->addAction(send_service_gtask);
-    get_service_gtask = new QAction(tr("&Get GTask Files"), this);
-    Sync->addAction(get_service_gtask);
+//    new_service = new QAction(tr("&Add Service"), this);
+//    Sync->addAction(new_service);
+//    sync_service = new QAction(tr("&Sync Services (On)"), this);
+//    Sync->addAction(sync_service);
+//    sync_service_off = new QAction(tr("&Sync Services Off"), this);
+//    Sync->addAction(sync_service_off);
+//    send_service = new QAction(tr("&Send Current File"), this);
+//    Sync->addAction(send_service);
+//    get_service = new QAction(tr("&Get Dropbox Files"), this);
+//    Sync->addAction(get_service);
+//    send_service_gtask = new QAction(tr("&Send Current File (GTask)"), this);
+//    Sync->addAction(send_service_gtask);
+//    get_service_gtask = new QAction(tr("&Get GTask Files"), this);
+//    Sync->addAction(get_service_gtask);
 
-    sync_service->setDisabled(true);
-    send_service->setDisabled(true);
-    sync_service_off->setDisabled(true);
-    get_service->setDisabled(true);
-    send_service_gtask->setDisabled(true);
-    get_service_gtask->setDisabled(true);
+//    sync_service->setDisabled(true);
+//    send_service->setDisabled(true);
+//    sync_service_off->setDisabled(true);
+//    get_service->setDisabled(true);
+//    send_service_gtask->setDisabled(true);
+//    get_service_gtask->setDisabled(true);
 
     addTask = new QPushButton( tr("Add Task") );
     delTask = new QPushButton( tr("Delete") );
@@ -260,21 +260,21 @@ void MainWindow::initial()
     connect(new_week_task, SIGNAL(triggered()),
             this->my_task_list, SLOT(week_task()));
 
-    connect(new_service, SIGNAL(triggered()),
-            this, SLOT(newServiceClick()));
+//    connect(new_service, SIGNAL(triggered()),
+//            this, SLOT(newServiceClick()));
 
-    connect(sync_service, SIGNAL(triggered()),
-            this, SLOT(syncClick()));
-    connect(sync_service_off, SIGNAL(triggered()),
-            this, SLOT(syncClickOff()));
-    connect(send_service, SIGNAL(triggered()),
-            this->my_sync_widget, SLOT(sendFiles()));
-    connect(get_service, SIGNAL(triggered()),
-            this->my_sync_widget, SLOT(getFiles()));
-    connect(send_service_gtask, SIGNAL(triggered()),
-            this->my_sync_widget, SLOT(sendFilesGTask()));
-    connect(get_service_gtask, SIGNAL(triggered()),
-            this->my_sync_widget, SLOT(getFilesGTask()));
+//    connect(sync_service, SIGNAL(triggered()),
+//            this, SLOT(syncClick()));
+//    connect(sync_service_off, SIGNAL(triggered()),
+//            this, SLOT(syncClickOff()));
+//    connect(send_service, SIGNAL(triggered()),
+//            this->my_sync_widget, SLOT(sendFiles()));
+//    connect(get_service, SIGNAL(triggered()),
+//            this->my_sync_widget, SLOT(getFiles()));
+//    connect(send_service_gtask, SIGNAL(triggered()),
+//            this->my_sync_widget, SLOT(sendFilesGTask()));
+//    connect(get_service_gtask, SIGNAL(triggered()),
+//            this->my_sync_widget, SLOT(getFilesGTask()));
 
 }
 
@@ -314,23 +314,23 @@ void MainWindow::saveFile()
     }
 }
 
-void MainWindow::syncSaveFile(QString &syncPathName)
-{
-    if(this->my_task_list->file_location!="")
-    {
-        this->my_task_list->writeXml(this->my_task_list->file_location);
-    }
-    else
-    {
-        QString fileName = QFileDialog::getSaveFileName(this);
-        if (!fileName.isEmpty())
-        {
-            this->my_task_list->writeXml(fileName);
-        }
-    }
+//void MainWindow::syncSaveFile(QString &syncPathName)
+//{
+//    if(this->my_task_list->file_location!="")
+//    {
+//        this->my_task_list->writeXml(this->my_task_list->file_location);
+//    }
+//    else
+//    {
+//        QString fileName = QFileDialog::getSaveFileName(this);
+//        if (!fileName.isEmpty())
+//        {
+//            this->my_task_list->writeXml(fileName);
+//        }
+//    }
 
-    syncPathName = this->my_task_list->file_location;
-}
+//    syncPathName = this->my_task_list->file_location;
+//}
 
 void MainWindow::print()
 {

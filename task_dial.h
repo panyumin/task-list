@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QtGui>
+#include "htmleditor.h"
 
 class QLabel;
 class QPushButton;
@@ -18,8 +19,8 @@ class task_dial : public QDialog
 public:
     explicit task_dial(QWidget *parent = 0);
     QLineEdit *task_name;
-    QTextEdit *task_note;
     QDateEdit *due_t;
+    htmleditor* h_edit;
 
 
 signals:

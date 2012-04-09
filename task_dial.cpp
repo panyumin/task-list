@@ -12,15 +12,16 @@ task_dial::task_dial(QWidget *parent) :
     cancelButton = new QPushButton("cancel");
 
     task_name = new QLineEdit;
-    task_note = new QTextEdit;
     due_t = new QDateEdit;
+
+    h_edit = new htmleditor;
 
     //setup layout
     QVBoxLayout *main_layout = new QVBoxLayout;
     main_layout->addWidget(taskname_lab, 0, Qt::AlignCenter);
     main_layout->addWidget(task_name);
     main_layout->addWidget(tasknote_lab, 0, Qt::AlignCenter);
-    main_layout->addWidget(task_note);
+    main_layout->addWidget(h_edit);
     main_layout->addWidget(due_time_lab, 0, Qt::AlignCenter);
     main_layout->addWidget(due_t);
 
@@ -41,5 +42,3 @@ task_dial::task_dial(QWidget *parent) :
     connect(cancelButton, SIGNAL(clicked()),
             this, SLOT(reject()));
 }
-
-

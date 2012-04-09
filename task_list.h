@@ -5,6 +5,7 @@
 #include <QtGui>
 #include "task_dial.h"
 #include "list_dial.h"
+#include "htmleditor.h"
 
 class QTableView;
 class QStandardItemModel;
@@ -40,6 +41,8 @@ public slots:
 private:
     void initial();
     bool show_note;
+
+
     //QList <QString> t_name;
     //QList <QString> t_note;
     //QList <QDateTime> s_time;

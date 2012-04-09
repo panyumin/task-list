@@ -64,7 +64,7 @@ void task_list::addTask()
     if(t_dial.exec())
     {
         QString task_name = t_dial.task_name->text();
-        QString task_note = t_dial.task_note->toPlainText();
+        QString task_note = t_dial.h_edit->textEdit->toHtml();
         QDate due_time = t_dial.due_t->date();
 
         addTask(task_name, task_note, due_time);
@@ -97,9 +97,11 @@ void task_list::addTask(QString name, QString note, QDate due)
             task_child->setText(0,name);
             task_child->setText(1,note);
             task_child->setText(2,due.toString("yyyy-MM-dd"));
+            //task_child->setData(2,Qt::UserRole,new QVariant(&due));
             task_child->setCheckState(3,Qt::Unchecked);
             task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  | Qt::ItemIsEditable);
             this->topLevelItem(location)->addChild(task_child);
+
 
         }
         else
@@ -201,13 +203,13 @@ void task_list::editTask()
         t_dial.setWindowTitle( tr("Edit Task") );
 
         t_dial.task_name->setText(name);
-        t_dial.task_note->setText(note);
+        t_dial.h_edit->textEdit->setHtml(note);
         t_dial.due_t->setDate(due);
 
         if(t_dial.exec())
         {
             QString task_name = t_dial.task_name->text();
-            QString task_note = t_dial.task_note->toPlainText();
+            QString task_note = t_dial.h_edit->textEdit->toHtml();
             QDate due_time = t_dial.due_t->date();
 
             editTask(task_name, task_note, due_time, status);
@@ -293,7 +295,10 @@ void task_list::changeFont()
 
 void task_list::delTask()
 {
-    this->currentItem()->~QTreeWidgetItem();
+    if(this->topLevelItemCount()!=0)
+    {
+        this->currentItem()->~QTreeWidgetItem();
+    }
     //this->removeItemWidget(this->currentItem(),0);
 }
 

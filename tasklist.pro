@@ -26,7 +26,8 @@ SOURCES += main.cpp\
     task_list.cpp \
     list_dial.cpp \
     sync_widget.cpp \
-    sync_server.cpp
+    sync_server.cpp \
+    htmleditor.cpp
 
 
 
@@ -35,7 +36,8 @@ HEADERS  += mainwindow.h \
     task_list.h \
     list_dial.h \
     sync_widget.h \
-    sync_server.h
+    sync_server.h \
+    htmleditor.h
 
 
 OTHER_FILES += \
@@ -191,7 +193,26 @@ OTHER_FILES += \
     gtasks/src/simpleoauth/simpleoauth_export.h \
     gtasks/src/simpleoauth/oauth_token_p.h \
     gtasks/src/simpleoauth/oauth_token.h \
-    gtasks/src/simpleoauth/oauth_helper.h
+    gtasks/src/simpleoauth/oauth_helper.h \
+    images/undo.png \
+    images/underline.png \
+    images/strikethrough.png \
+    images/save.png \
+    images/right.png \
+    images/redo.png \
+    images/paste.png \
+    images/open.png \
+    images/new.png \
+    images/left.png \
+    images/italic.png \
+    images/cut.png \
+    images/copy.png \
+    images/center.png \
+    images/bold.png \
+    images/number.png \
+    images/bullet.png \
+    images/indent_right.png \
+    images/indent_left.png
 
 RESOURCES += \
     images.qrc
