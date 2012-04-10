@@ -23,10 +23,10 @@ signals:
     
 public slots:
     void addTask();
-    void addTask(QString name, QString note, QDate due);
+    void addTask(QString name, QString note, QDate due, QString plain_note);
     void delTask();
     void editTask();
-    void editTask(QString name, QString note, QDate due, QString status);
+    void editTask(QString name, QString note, QDate due, QString status, QString plain_note);
     void show_hide_Note();
     void changeFont();
     void new_list();

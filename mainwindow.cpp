@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "sync_widget.h"
+#include "search_dial.h"
 #include <QtGui>
 #include <QWidget>
 #include <QDebug>
@@ -14,12 +15,11 @@ MainWindow::MainWindow(QWidget *parent)
     my_task_list = new task_list;
     my_sync_widget = new sync_widget(this, Qt::Popup | Qt::Dialog);
 
-    my_sync_widget->oauthRequest = new KQOAuthRequest(this);
-    my_sync_widget->oauthManager = new KQOAuthManager(this);
-
     my_sync_widget->m_oauthHelper = new OAuth::Helper(this);
     initial();
     setWindowTitle("Task List");
+
+    search_gen = new search;
 
 }
 
@@ -27,6 +27,51 @@ MainWindow::~MainWindow()
 {
     delete my_task_list;
 }
+
+void MainWindow::googleSendStatus(bool result){
+    if(result)
+        statusBar()->showMessage(tr("Current file successfully sent"));
+    else
+        statusBar()->showMessage(tr("Error: current file not fully synced (Google)"));
+}
+
+void MainWindow::googleRecvStatus(bool result){
+    if(result)
+        statusBar()->showMessage(tr("Current file updated with Google Tasks"));
+    else
+        statusBar()->showMessage(tr("Error: current file not fully synced (Google)"));
+}
+
+void MainWindow::dboxSendStatus(bool result){
+    if(result)
+        statusBar()->showMessage(tr("Current file sent to Dropbox"));
+    else
+        statusBar()->showMessage(tr("Error: current file not fully synced (Dropbox)"));
+}
+
+void MainWindow::dboxRecvStatus(bool result){
+    if(result)
+        statusBar()->showMessage(tr("Dropbox files successfully pulled down"));
+    else
+        statusBar()->showMessage(tr("Error: current file not fully synced (Dropbox)"));
+}
+
+void MainWindow::googleAuthStatus(bool result){
+    if(result)
+        statusBar()->showMessage(tr("Google Authentication complete"));
+    else
+        statusBar()->showMessage(tr("Error: Tasks not authenticated, try again..."));
+}
+
+void MainWindow::dboxAuthStatus(bool result){
+    if(result)
+        statusBar()->showMessage(tr("Dropbox Authentication complete"));
+    else
+        statusBar()->showMessage(tr("Error: Dropbox not authenticated, try again..."));
+}
+
+
+
 
 void MainWindow::newServiceClick(){
     my_sync_widget->show();
@@ -73,10 +118,19 @@ void MainWindow::initial()
 {
     my_sync_widget->setWindowModality(Qt::WindowModal);
     my_sync_widget->hide();
+
     connect(my_sync_widget, SIGNAL(getSaveFile(QString&)), this, SLOT(syncSaveFile(QString&)));
     connect(my_sync_widget, SIGNAL(enableServiceButton(QString&)), this, SLOT(serviceAdded(QString&)));
     connect(this, SIGNAL(syncClickEmit()), my_sync_widget, SLOT(syncFiles()));
     connect(my_sync_widget, SIGNAL(openXml(QString&)), this, SLOT(openXmlRecv(QString&)));
+
+    connect(my_sync_widget, SIGNAL(dboxAuthResult(bool)), this, SLOT(dboxAuthStatus(bool)));
+    connect(my_sync_widget, SIGNAL(dboxRecvResult(bool)), this, SLOT(dboxRecvStatus(bool)));
+    connect(my_sync_widget, SIGNAL(dboxSendResult(bool)), this, SLOT(dboxSendStatus(bool)));
+
+    connect(my_sync_widget, SIGNAL(googleAuthResult(bool)), this, SLOT(googleAuthStatus(bool)));
+    connect(my_sync_widget, SIGNAL(googleRecvResult(bool)), this, SLOT(googleRecvStatus(bool)));
+    connect(my_sync_widget, SIGNAL(googleSendResult(bool)), this, SLOT(googleSendStatus(bool)));
 
     fileMenu = menuBar()->addMenu(tr("&File"));
 
@@ -166,6 +220,7 @@ void MainWindow::initial()
     editTask = new QPushButton( tr("Edit Task") );
     pop_up = new QPushButton(tr("Pop Task Up"));
     move_down = new QPushButton(tr("Move Task Down"));
+    search_button = new QPushButton(tr("Search"));
 
     QWidget *main_widget = new QWidget;
 
@@ -216,7 +271,7 @@ void MainWindow::initial()
     */
 
 
-    main_layout->addWidget( new QLabel(tr("List content")),0,Qt::AlignCenter );
+    main_layout->addWidget( new QLabel(tr("Current Lists")),0,Qt::AlignCenter );
     main_layout->addWidget(this->my_task_list);
 
     button_layout1->addWidget(addTask);
@@ -225,6 +280,7 @@ void MainWindow::initial()
 
     button_layout2->addWidget(pop_up);
     button_layout2->addWidget(move_down);
+    button_layout2->addWidget(search_button);
 
     main_layout->addLayout(button_layout1);
     main_layout->addLayout(button_layout2);
@@ -275,6 +331,8 @@ void MainWindow::initial()
             this->my_sync_widget, SLOT(sendFilesGTask()));
     connect(get_service_gtask, SIGNAL(triggered()),
             this->my_sync_widget, SLOT(getFilesGTask()));
+
+    connect(search_button, SIGNAL(clicked()), this, SLOT(search_start()));
 
 }
 
@@ -344,4 +402,16 @@ void MainWindow::print()
              QPixmap p_map = QPixmap::grabWidget(this);
              temp_print.drawPixmap(0, 0, p_map);
          }
+}
+
+void MainWindow::search_start(){
+    my_search_dial = new search_dial;
+    if(my_search_dial->exec()){
+
+        connect(my_search_dial, SIGNAL(emitSearch(QString)), this, SLOT(searchRecv(QString)));
+    }
+}
+
+void MainWindow::searchRecv(QString searchText){
+    this->search_gen->start_search(searchText, this->my_task_list);
 }

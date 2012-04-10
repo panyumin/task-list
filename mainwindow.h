@@ -3,6 +3,8 @@
 #define MAINWINDOW_H
 
 #include "task_list.h"
+#include "search.h"
+#include "search_dial.h"
 
 class QListWidget;
 class QStackedWidget;
@@ -27,6 +29,15 @@ public:
 public slots:
     void serviceAdded(QString &serviceType);
     void openXmlRecv(QString &filename);
+    void dboxRecvStatus(bool result);
+    void dboxSendStatus(bool result);
+    void googleRecvStatus(bool result);
+    void googleSendStatus(bool result);
+
+    void googleAuthStatus(bool result);
+    void dboxAuthStatus(bool result);
+
+    void searchRecv(QString searchText);
 private slots:
     void loadFile();
     void saveasFile();
@@ -37,6 +48,7 @@ private slots:
     void newServiceClick();
     void syncClick();
     void syncClickOff();
+    void search_start();
 
 signals:
     void syncClickEmit();
@@ -79,6 +91,10 @@ private:
 
     sync_widget *my_sync_widget;
     QTimer *syncTimer;
+
+    QPushButton *search_button;
+    search *search_gen;
+    search_dial *my_search_dial;
 };
 
 #endif // MAINWINDOW_H
