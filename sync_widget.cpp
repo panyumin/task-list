@@ -53,8 +53,10 @@ void sync_widget::requestTokenReceived(OAuth::Token token){
             m_oauthHelper->getAccessToken(token, QUrl(apiAccTokUrl));
         }
     }
-    else
+    else{
         qDebug() << "Error in retrieving the request token";
+        emit googleAuthResult(false);
+    }
 }
 
 void sync_widget::accessTokenReceived(OAuth::Token token){
@@ -68,10 +70,14 @@ void sync_widget::accessTokenReceived(OAuth::Token token){
         qDebug() << "oauth secret token: " << oauthSecretKeyGoogle;
 
         setupGTasks();
+        emit googleAuthResult(true);
+
         getAllTaskslists();
     }
-    else
+    else{
         qDebug() << "access failure";
+        emit googleAuthResult(false);
+    }
     disconnect(m_oauthHelper, SIGNAL(requestTokenReceived(OAuth::Token)), this, SLOT(requestTokenReceived(OAuth::Token)));
     disconnect(m_oauthHelper, SIGNAL(accessTokenReceived(OAuth::Token)), this, SLOT(accessTokenReceived(OAuth::Token)));
 }
@@ -140,8 +146,10 @@ void sync_widget::onTemporaryTokenReceived(OAuth::Token token)
         authorized->show();
         connect(authorized, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(getDboxAccess()));
     }
-    else
+    else{
         qDebug() << "Error in retrieving the request token";
+        emit dboxAuthResult(false);
+    }
 }
 
 void sync_widget::getDboxAccess(){
@@ -167,6 +175,7 @@ void sync_widget::onAccessTokenReceived(OAuth::Token token) {
 
     QString service = "dbox";
     emit enableServiceButton(service);
+    emit dboxAuthResult(true);
 
     disconnect(m_oauthHelper, SIGNAL(requestTokenReceived(OAuth::Token)), this, SLOT(onTemporaryTokenReceived(OAuth::Token)));
     disconnect(m_oauthHelper, SIGNAL(accessTokenReceived(OAuth::Token)), this, SLOT(onAccessTokenReceived(OAuth::Token)));
@@ -199,6 +208,7 @@ void sync_widget::sendRequest() {
 
 void sync_widget::onAuthorizedRequestDone() {
     qDebug() << "File sent to drop box";
+    emit dboxSendResult(true);
     if(syncCall)
         this->getRequest();
 }
@@ -211,6 +221,7 @@ void sync_widget::listFiles() {
     if( oauthKey.isEmpty() ||
         oauthSecretKey.isEmpty()) {
         qDebug() << "No access tokens. Aborting.";
+        emit dboxRecvResult(false);
         return;
     }
     QUrl m_url("https://api.dropbox.com/1/metadata/sandbox/");
@@ -238,6 +249,7 @@ void sync_widget::outputFileList(){
     QVariantMap result = parser.parse(response, &ok).toMap();
     if(!ok){
         qDebug() << "error in parsing json for listing";
+        emit dboxRecvResult(false);
     }
 
     foreach (QVariant file, result["contents"].toList()){
@@ -273,6 +285,7 @@ void sync_widget::getRequestFiles(){
     }
     else{
         qDebug() << "no more files";
+        emit dboxRecvResult(true);
         if(googleAuth.tokenSecret() == "")
             syncCall = false;
     }
@@ -285,6 +298,7 @@ void sync_widget::outputResponseFile(){
     QFile file(syncFileList.at(0));
     syncFileList.erase(syncFileList.begin());
     if(!file.open(QIODevice::WriteOnly)){
+        emit dboxRecvResult(false);
         disconnect(m_reply, SIGNAL(finished()), this, SLOT(outputResponseFile()));
         return;
     }
@@ -341,6 +355,7 @@ void sync_widget::onListReturn(GTasks::Tasklist tasklist, GTasks::Error error){
     if (error.code() != QNetworkReply::NoError) {
         // Do some error handling here
         qDebug() << "Error:" << error.code() << error.message();
+        emit googleRecvResult(false);
         return;
     }
     qDebug() << "list returned";
@@ -361,6 +376,7 @@ void sync_widget::onTaskListingReturn(GTasks::TaskCollection collection, GTasks:
     if (error.code() != QNetworkReply::NoError) {
         // Do some error handling here
         qDebug() << "Error:" << error.code() << error.message();
+        emit googleRecvResult(false);
         return;
     }
     qDebug() << "task collection returned";
@@ -392,7 +408,8 @@ void sync_widget::getFilesGTaskWrite(){
     QFile file(filename);
     if(!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        QMessageBox::information(this, tr("Can write to the file"), file.errorString());
+        QMessageBox::information(this, tr("Cannot write to the file"), file.errorString());
+        emit googleRecvResult(false);
         return;
     }
     else
@@ -405,6 +422,7 @@ void sync_widget::getFilesGTaskWrite(){
     gtaskDoc.clear();
     emit openXml(filename);
 
+    emit googleRecvResult(true);
     if(syncCall == true)
         syncCall = false;
 }
@@ -421,12 +439,14 @@ void sync_widget::sendFilesGTask(){
     //getAllTaskslists();
 
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text)){
-        QMessageBox::information(this, tr("Can read the file"), file.errorString());
+        QMessageBox::information(this, tr("Cannot read the file"), file.errorString());
+        emit googleSendResult(false);
         return;
     }
     else{
         if(!doc.setContent(&file)){
             QMessageBox::information(this, tr("Read XML Fail"), file.errorString());
+            emit googleSendResult(false);
             return;
         }
         file.close();
@@ -436,6 +456,7 @@ void sync_widget::sendFilesGTask(){
     QDomElement root = doc.firstChildElement();
     if(root.tagName()!="lists"){
         QMessageBox::information(this, tr("XML Format not correct"), file.errorString());
+        emit googleSendResult(false);
         return;
     }
     lists = root.elementsByTagName("list");
@@ -447,6 +468,7 @@ void sync_widget::sendFilesGTask(){
     {//the XML file's format is wrong
         //this->clear();
         QMessageBox::information(this, tr("XML Format not correct"), file.errorString());
+        emit googleSendResult(false);
         return;
     }
     else
@@ -477,6 +499,7 @@ void sync_widget::listRemake(){
         }
     }
     qDebug() << "list addition complete";
+    emit googleSendResult(true);
     if(syncCall == true)
         this->getFilesGTask();
 }
@@ -485,6 +508,7 @@ void sync_widget::onClearSent(GTasks::Error error){
     if (error.code() != QNetworkReply::NoError) {
         // Do some error handling here
         qDebug() << "Error:" << error.code() << error.message();
+        emit googleSendResult(false);
         return;
     }
     qDebug() << "clear complete";
@@ -500,6 +524,7 @@ void sync_widget::onTasklistsSent(GTasks::Tasklist tasklistMeta, GTasks::Error e
     if (error.code() != QNetworkReply::NoError) {
         // Do some error handling here
         qDebug() << "Error:" << error.code() << error.message();
+        emit googleSendResult(false);
         return;
     }
 
@@ -544,6 +569,7 @@ void sync_widget::onTaskSent(GTasks::Task taskMeta, GTasks::Error error){
     if (error.code() != QNetworkReply::NoError) {
         // Do some error handling here
         qDebug() << "Error:" << error.code() << error.message() << error.httpCode() << error.gtasksMessage();
+        emit googleSendResult(false);
         return;
     }
 
@@ -557,6 +583,7 @@ void sync_widget::onTasklistsReceived(GTasks::TasklistCollection tasklists, GTas
     if (error.code() != QNetworkReply::NoError) {
         // Do some error handling here
         qDebug() << "Error:" << error.code() << error.message();
+        emit googleSendResult(false);
         return;
     }
     gtaskListMap.clear();

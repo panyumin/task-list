@@ -45,6 +45,14 @@ signals:
     void killServerConnection();
     void enableServiceButton (QString &serviceType);
     void openXml(QString &filename);
+
+    void googleAuthResult(bool result);
+    void dboxAuthResult(bool result);
+    void googleSendResult(bool result);
+    void googleRecvResult(bool result);
+    void dboxSendResult(bool result);
+    void dboxRecvResult(bool result);
+
 public slots:
     void googleClick();
     void dboxClick();
