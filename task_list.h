@@ -18,6 +18,17 @@ public:
     explicit task_list(QWidget *parent = 0);
     ~task_list();
     QString file_location;
+
+    virtual bool dropMimeData(QTreeWidgetItem *parent, int index, const QMimeData *data, Qt::DropAction action);
+    QStringList mimeTypes() const;
+    Qt::DropActions supportedDropActions () const;
+    void mouseMoveEvent(QMouseEvent *event);
+
+//protected:
+//    void dragEnterEvent(QDragEnterEvent *event);
+//    void dragMoveEvent(QDragMoveEvent *event);
+//    void dropEvent(QDropEvent *event);
+    //void mousePressEvent(QMouseEvent *event);
     
 signals:
     

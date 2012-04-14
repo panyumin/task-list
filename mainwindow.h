@@ -27,15 +27,15 @@ public:
     ~MainWindow();
 
 public slots:
-    void serviceAdded(QString &serviceType);
-    void openXmlRecv(QString &filename);
-    void dboxRecvStatus(bool result);
-    void dboxSendStatus(bool result);
-    void googleRecvStatus(bool result);
-    void googleSendStatus(bool result);
+//    void serviceAdded(QString &serviceType);
+//    void openXmlRecv(QString &filename);
+//    void dboxRecvStatus(bool result);
+//    void dboxSendStatus(bool result);
+//    void googleRecvStatus(bool result);
+//    void googleSendStatus(bool result);
 
-    void googleAuthStatus(bool result);
-    void dboxAuthStatus(bool result);
+//    void googleAuthStatus(bool result);
+//    void dboxAuthStatus(bool result);
 
     void searchRecv(QString searchText);
 private slots:
@@ -44,25 +44,19 @@ private slots:
     void saveFile();    
     void print();
 
-    void syncSaveFile(QString &syncPathName);
-    void newServiceClick();
-    void syncClick();
-    void syncClickOff();
+//    void syncSaveFile(QString &syncPathName);
+//    void newServiceClick();
+//    void syncClick();
+//    void syncClickOff();
     void search_start();
 
 signals:
-    void syncClickEmit();
+//    void syncClickEmit();
 
 private:
     void initial();
-    QPushButton *addTask;
-    QPushButton *delTask;
-    QPushButton *editTask;
-    QPushButton *pop_up;
-    QPushButton *move_down;
-    QStringList *lists_name;
-    QVector<task_list*> lists;
     task_list *my_task_list;
+
 
     QMenu *fileMenu;
     QAction *loadAction;
@@ -72,9 +66,13 @@ private:
     QAction *exitAction;
     QAction *newList;
 
-    QMenu *OptMenu;
-    QAction *change_font;
+    QMenu *listMenu;
+    QAction *addAct;
+    QAction *delAct;
+    QAction *editAct;
     QAction *display_note;
+
+    QToolBar *listToolBar;
 
     QMenu *Template;
     QAction *new_grocery;

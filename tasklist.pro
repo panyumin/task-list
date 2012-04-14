@@ -217,7 +217,11 @@ OTHER_FILES += \
     images/number.png \
     images/bullet.png \
     images/indent_right.png \
-    images/indent_left.png
+    images/indent_left.png \
+    images/new_task.png \
+    images/search.png \
+    images/delete.png \
+    images/edit.png
 
 RESOURCES += \
     images.qrc

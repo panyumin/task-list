@@ -53,7 +53,7 @@ void task_list::new_list(QString name)
     {
         QTreeWidgetItem* list_name = new QTreeWidgetItem(this,0);
         list_name->setText(0,name);
-        list_name->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsEditable);
+        list_name->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled );
         this->addTopLevelItem(list_name);
     }
 }
@@ -104,15 +104,15 @@ void task_list::addTask(QString name, QString note, QDate due, QString plain_not
         if(!this->selectedItems().empty() && location!=-1)
         {//we can add the child to this node
             QTreeWidgetItem* task_child = new QTreeWidgetItem(this->topLevelItem(location),1);
+
             task_child->setText(0,name);
             task_child->setText(1,note);
             task_child->setText(2,due.toString("yyyy-MM-dd"));
             //task_child->setData(2,Qt::UserRole,new QVariant(&due));
             task_child->setCheckState(3,Qt::Unchecked);
-            task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled );//  | Qt::ItemIsEditable);
+            task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled );//  | Qt::ItemIsEditable);
             task_child->setText(4, plain_note);
             this->topLevelItem(location)->addChild(task_child);
-
 
         }
         else
@@ -188,6 +188,11 @@ void task_list::editTask()
     QDate due;
     QString status;
 
+    if(currentItem()==NULL)
+    {
+        return;
+    }
+
     int location = -1;
     for(int i=0; i<this->topLevelItemCount();i++)
     {
@@ -198,7 +203,7 @@ void task_list::editTask()
         }
     }
 
-    if( location==-1  )
+    if( location==-1 && this->currentItem()->type()==1  )
     {//we get a child node and we need to update it.
        name =  this->currentItem()->text(0);
        note =  this->currentItem()->text(1);
@@ -307,7 +312,7 @@ void task_list::changeFont()
 
 void task_list::delTask()
 {
-    if(this->topLevelItemCount()!=0)
+    if(this->currentItem()!=NULL)
     {
         this->currentItem()->~QTreeWidgetItem();
     }
@@ -357,7 +362,7 @@ void task_list::loadXml(QString fileName)
             //create the list
             QTreeWidgetItem* list_name = new QTreeWidgetItem(this,0);
             list_name->setText(0, tasks_ele.attribute("name","") );
-            list_name->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsEditable);
+            list_name->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsDragEnabled);
             this->addTopLevelItem(list_name);
 
             if(tasks_ele.attribute("name","")=="")
@@ -392,7 +397,7 @@ void task_list::loadXml(QString fileName)
                 }
 
                 task_child->setText(4, task_ele.attribute("plain_note"));
-                task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled );//| Qt::ItemIsEditable);
+                task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled );//| Qt::ItemIsEditable);
                 list_name->addChild(task_child);
 
             }
@@ -465,7 +470,7 @@ void task_list::grocery()
 {
     QTreeWidgetItem* list_name = new QTreeWidgetItem(this,0);
     list_name->setText(0,"grocery");
-    list_name->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  | Qt::ItemIsEditable);
+    list_name->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
     this->addTopLevelItem(list_name);
 
     QTreeWidgetItem* task_child;
@@ -476,7 +481,7 @@ void task_list::grocery()
     task_child->setText(1,"");
     task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
-    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled );// | Qt::ItemIsEditable);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled);// | Qt::ItemIsEditable);
     list_name->addChild(task_child);
 
     task_child = new QTreeWidgetItem(list_name,1);
@@ -484,7 +489,7 @@ void task_list::grocery()
     task_child->setText(1,"");
     task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
-    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled );// | Qt::ItemIsEditable);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled);// | Qt::ItemIsEditable);
     list_name->addChild(task_child);
 
     task_child = new QTreeWidgetItem(list_name,1);
@@ -492,7 +497,7 @@ void task_list::grocery()
     task_child->setText(1,"");
     task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
-    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled );// | Qt::ItemIsEditable);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled);// | Qt::ItemIsEditable);
     list_name->addChild(task_child);
 
     task_child = new QTreeWidgetItem(list_name,1);
@@ -500,7 +505,7 @@ void task_list::grocery()
     task_child->setText(1,"");
     task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
-    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled );// | Qt::ItemIsEditable);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled);// | Qt::ItemIsEditable);
     list_name->addChild(task_child);
 
     task_child = new QTreeWidgetItem(list_name,1);
@@ -508,7 +513,7 @@ void task_list::grocery()
     task_child->setText(1,"");
     task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
-    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled );// | Qt::ItemIsEditable);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled);// | Qt::ItemIsEditable);
     list_name->addChild(task_child);
 
     task_child = new QTreeWidgetItem(list_name,1);
@@ -516,7 +521,7 @@ void task_list::grocery()
     task_child->setText(1,"");
     task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
-    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled );// | Qt::ItemIsEditable);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled);// | Qt::ItemIsEditable);
     list_name->addChild(task_child);
 
     task_child = new QTreeWidgetItem(list_name,1);
@@ -524,7 +529,7 @@ void task_list::grocery()
     task_child->setText(1,"");
     task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
-    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled );// | Qt::ItemIsEditable);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled);// | Qt::ItemIsEditable);
     list_name->addChild(task_child);
 }
 
@@ -532,7 +537,7 @@ void task_list::week_task()
 {
     QTreeWidgetItem* list_name = new QTreeWidgetItem(this,0);
     list_name->setText(0,"week_task");
-    list_name->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsEditable);
+    list_name->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
     this->addTopLevelItem(list_name);
 
     QTreeWidgetItem* task_child;
@@ -544,7 +549,7 @@ void task_list::week_task()
     task_child->setText(1,"");   
     task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
-    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  );//| Qt::ItemIsEditable);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled );//| Qt::ItemIsEditable);
     list_name->addChild(task_child);
 
     task_child = new QTreeWidgetItem(list_name,1);
@@ -552,7 +557,7 @@ void task_list::week_task()
     task_child->setText(1,"");
     task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
-    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  );//| Qt::ItemIsEditable);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  | Qt::ItemIsDragEnabled);//| Qt::ItemIsEditable);
     list_name->addChild(task_child);
 
     task_child = new QTreeWidgetItem(list_name,1);
@@ -560,7 +565,7 @@ void task_list::week_task()
     task_child->setText(1,"");
     task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
-    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  );//| Qt::ItemIsEditable);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled );//| Qt::ItemIsEditable);
     list_name->addChild(task_child);
 
     task_child = new QTreeWidgetItem(list_name,1);
@@ -568,7 +573,7 @@ void task_list::week_task()
     task_child->setText(1,"");
     task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
-    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  );//| Qt::ItemIsEditable);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled );//| Qt::ItemIsEditable);
     list_name->addChild(task_child);
 
     task_child = new QTreeWidgetItem(list_name,1);
@@ -576,6 +581,186 @@ void task_list::week_task()
     task_child->setText(1,"");
     task_child->setText(2,currDate.toString("yyyy-MM-dd"));
     task_child->setCheckState(3,Qt::Unchecked);
-    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  );//| Qt::ItemIsEditable);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  | Qt::ItemIsDragEnabled);//| Qt::ItemIsEditable);
     list_name->addChild(task_child);
+}
+
+
+//the following part is the drag and drop implemention
+bool task_list::dropMimeData(QTreeWidgetItem *parent, int index, const QMimeData *data, Qt::DropAction action)
+{
+    QList<QUrl> urlList;
+    QTreeWidgetItem *task_item;
+
+    urlList = data->urls(); // retrieve list of urls
+    qDebug() << index;
+
+    //because we just allow sigle selection
+    //so we can use currentItem() to find the item be draged.
+    // make new QTreeWidgetItem and set its text
+    // if parent is null - add top level item (this parent)
+    task_item = new QTreeWidgetItem();
+    if (parent == NULL)
+    {//int this case we drag to the empty area...
+
+
+        if(currentItem()->type()==0)
+        {//the dragged element is a whole list
+            int loc = this->indexOfTopLevelItem(currentItem());
+            if( (loc-index)==0 || (index-loc)==1 )
+            {
+                //do nothing
+            }
+            else if(loc > index)
+            {
+                task_item = this->takeTopLevelItem( loc );
+                this->insertTopLevelItem(index,task_item);
+                this->setCurrentItem(task_item);
+            }
+            else
+            {
+                task_item = this->takeTopLevelItem( loc );
+                this->insertTopLevelItem(index-1,task_item);
+                this->setCurrentItem(task_item);
+            }
+
+
+        }
+        else
+        {// the dragged element is a task
+
+            QTreeWidgetItem * list_item = new QTreeWidgetItem(this,0);
+            list_item->setText(0,"task list");
+            task_item = currentItem()->parent()->takeChild( currentItem()->parent()->indexOfChild(currentItem()) );
+            list_item->addChild(task_item);
+            this->insertTopLevelItem(index,list_item);
+            this->setCurrentItem(list_item);
+
+        }
+
+    }
+    else
+    {//we drop into the some top level item..
+        //case1: drop in the same parent as it used to be
+        //which means we are arranging the sequence of the elements in a list
+        if(currentItem()->parent()==parent)
+        {
+            //when we remove the original child to index should change..
+            int loc = currentItem()->parent()->indexOfChild(currentItem());
+            if( (loc-index)==0 || (index-loc)==1 )
+            {
+                //do nothing
+            }
+            else if(loc > index)
+            {
+                task_item = currentItem()->parent()->takeChild( currentItem()->parent()->indexOfChild(currentItem()) );
+                parent->insertChild(index,task_item);
+            }
+            else
+            {
+
+                task_item = currentItem()->parent()->takeChild( currentItem()->parent()->indexOfChild(currentItem()) );
+                parent->insertChild(index-1,task_item);
+            }
+
+        }
+        else
+        {//drop into another list
+            if(currentItem()->type()==1)
+            {//if the dragged element is just a task
+                task_item = currentItem()->parent()->takeChild( currentItem()->parent()->indexOfChild(currentItem()) );
+                parent->insertChild(index,task_item);
+
+            }
+            else
+            {// we have tp merge two list.
+                int loc = this->indexOfTopLevelItem( currentItem() );
+                QTreeWidgetItem * list_item = this->takeTopLevelItem(loc);
+
+                int i = 0;
+                while(list_item->childCount()>0)
+                {
+                    task_item = list_item->takeChild(0);
+                    parent->insertChild(index + i,task_item);
+                    i++;
+                }
+
+            }
+
+        }
+
+    }
+
+    // set item text
+
+    return true;
+
+}
+
+QStringList task_list::mimeTypes() const
+{
+    QStringList qstrList;
+     // list of accepted mime types for drop
+     qstrList.append("text/uri-list");
+     return qstrList;
+}
+
+Qt::DropActions task_list::supportedDropActions () const
+{
+    return Qt::CopyAction | Qt::MoveAction;
+}
+
+void task_list::mouseMoveEvent(QMouseEvent *event)
+{
+    // if not left button - return
+    if (!(event->buttons() & Qt::LeftButton)) return;
+
+    // if no item selected, return (else it would crash)
+    if (currentItem() == NULL) return;
+
+    if(currentItem()->type()==0)
+    {
+        QDrag *drag = new QDrag(this);
+        QMimeData *mimeData = new QMimeData;
+
+        // construct list of QUrls
+        // other widgets accept this mime type, we can drop to them
+        QList<QUrl> list;
+        list.append(QUrl(this->currentItem()->text(0)));
+        list.append(QUrl(this->currentItem()->text(1)));
+        list.append(QUrl(this->currentItem()->text(2)));
+        list.append(QUrl(this->currentItem()->text(3)));
+        list.append(QUrl(this->currentItem()->text(4)));
+
+        // mime stuff
+        mimeData->setUrls(list);
+        drag->setMimeData(mimeData);
+
+        // start drag
+        drag->start(Qt::CopyAction | Qt::MoveAction);
+    }
+
+    if(currentItem()->type()==1)
+    {
+        QDrag *drag = new QDrag(this);
+        QMimeData *mimeData = new QMimeData;
+
+        // construct list of QUrls
+        // other widgets accept this mime type, we can drop to them
+        QList<QUrl> list;
+        list.append(QUrl(this->currentItem()->text(0)));
+        list.append(QUrl(this->currentItem()->text(1)));
+        list.append(QUrl(this->currentItem()->text(2)));
+        list.append(QUrl(this->currentItem()->text(3)));
+        list.append(QUrl(this->currentItem()->text(4)));
+
+        // mime stuff
+        mimeData->setUrls(list);
+        drag->setMimeData(mimeData);
+
+        // start drag
+        drag->start( Qt::CopyAction | Qt::MoveAction);
+
+    }
+
 }

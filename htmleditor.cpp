@@ -75,7 +75,6 @@ void htmleditor::createActions()
     underlineAct->setCheckable(true);
 
     strikethroughAct= new QAction(QIcon(":/style/all/images/strikethrough.png"), tr("&Strike Through"), this);
-    //strikethroughAct->setShortcut(tr("Ctrl+B"));
     QFont strikethrough;
     strikethrough.setStrikeOut(true);
     strikethroughAct->setFont(strikethrough);
