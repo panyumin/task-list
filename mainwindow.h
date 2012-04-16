@@ -27,15 +27,15 @@ public:
     ~MainWindow();
 
 public slots:
-//    void serviceAdded(QString &serviceType);
-//    void openXmlRecv(QString &filename);
-//    void dboxRecvStatus(bool result);
-//    void dboxSendStatus(bool result);
-//    void googleRecvStatus(bool result);
-//    void googleSendStatus(bool result);
+    void serviceAdded(QString &serviceType);
+    void openXmlRecv(QString &filename);
+    void dboxRecvStatus(bool result);
+    void dboxSendStatus(bool result);
+    void googleRecvStatus(bool result);
+    void googleSendStatus(bool result);
 
-//    void googleAuthStatus(bool result);
-//    void dboxAuthStatus(bool result);
+    void googleAuthStatus(bool result);
+    void dboxAuthStatus(bool result);
 
     void searchRecv(QString searchText);
 private slots:
@@ -44,14 +44,14 @@ private slots:
     void saveFile();    
     void print();
 
-//    void syncSaveFile(QString &syncPathName);
-//    void newServiceClick();
-//    void syncClick();
-//    void syncClickOff();
+    void syncSaveFile(QString &syncPathName);
+    void newServiceClick();
+    void syncClick();
+    void syncClickOff();
     void search_start();
 
 signals:
-//    void syncClickEmit();
+    void syncClickEmit();
 
 private:
     void initial();
@@ -71,6 +71,7 @@ private:
     QAction *delAct;
     QAction *editAct;
     QAction *display_note;
+    QAction *search_for;
 
     QToolBar *listToolBar;
 

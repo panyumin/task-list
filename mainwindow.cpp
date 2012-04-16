@@ -214,6 +214,13 @@ void MainWindow::initial()
     display_note = new QAction(tr("&Display/Hide Note"), this);
     listMenu->addAction(display_note);
 
+    listMenu->addSeparator();
+
+    search_for = new QAction(tr("&Search..."), this);
+    search_for->setShortcut(QKeySequence::Find);
+    listMenu->addAction(search_for);
+    connect(search_for, SIGNAL(triggered()), this, SLOT(search_start()));
+
     //template menu
     Template = menuBar()->addMenu(tr("&Template"));
 
@@ -264,13 +271,13 @@ void MainWindow::initial()
     QHBoxLayout *button_layout2 = new QHBoxLayout;
 
 
-    this->my_task_list->setColumnCount(4);
+    this->my_task_list->setColumnCount(5);
     this->my_task_list->setDragEnabled(true);
     this->my_task_list->viewport()->setAcceptDrops(true);
     this->my_task_list->setDropIndicatorShown(true);
     this->my_task_list->setDragDropMode(QAbstractItemView::DragDrop);
     QStringList tmp_l;
-    tmp_l << "Name" << "Note" << "Due Date" << "Status";
+    tmp_l << "Name" << "Note"<< "Tag" << "Due Date" << "Status";
     this->my_task_list->setHeaderLabels(tmp_l );
 
 
@@ -288,7 +295,7 @@ void MainWindow::initial()
 
     main_layout->addLayout(button_layout2);
     main_widget->setLayout(main_layout);
-    main_widget->setMinimumSize(430,500);
+    main_widget->setMinimumSize(520,500);
     this->setCentralWidget(main_widget);
 
     //connection

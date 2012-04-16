@@ -7,7 +7,6 @@
 #include "oauth_token.h"
 #include "oauth_helper.h"
 #include "simpleoauth_export.h"
-#include "sync_server.h"
 #include "error.h"
 #include "service.h"
 #include "jobs.h"
@@ -15,7 +14,7 @@
 #include "taskcollection.h"
 #include "tasklist.h"
 #include <QMap>
-
+class QAbstractButton;
 
 
 
@@ -35,8 +34,6 @@ public:
 
     GTasks::Service *myGtasks;
     OAuth::Helper *m_oauthHelper;
-    sync_server *myServer;
-
     OAuth::Token googleAuth;
     OAuth::Token dboxAuth;
 
@@ -76,6 +73,7 @@ private slots:
 
     void getDboxAccess();
 
+
     void onTasklistsReceived(GTasks::TasklistCollection tasklists, GTasks::Error error);
     void onTasklistsSent(GTasks::Tasklist tasklistMeta, GTasks::Error error);
     void onTaskSent(GTasks::Task taskMeta, GTasks::Error error);
@@ -92,6 +90,7 @@ private:
     bool syncCall;
     void setupGTasks();
     void getAllTaskslists();
+    void sendFilesGTaskOK();
 
     QString apiReqUrl, apiAuthUrl, apiAccTokUrl;
     QString apiConsKey, apiConsSecretKey;

@@ -10,6 +10,12 @@
 class QTableView;
 class QStandardItemModel;
 
+#define NAME_COL 0
+#define NOTE_COL 1
+#define TAG_COL 2
+#define DATE_COL 3
+#define CHECK_COL 4
+#define PLAINTEXT_COL 5
 
 class task_list : public QTreeWidget
 {
@@ -34,10 +40,10 @@ signals:
     
 public slots:
     void addTask();
-    void addTask(QString name, QString note, QDate due, QString plain_note);
+    void addTask(QString name, QString tag, QString note, QDate due, QString plain_note);
     void delTask();
     void editTask();
-    void editTask(QString name, QString note, QDate due, QString status, QString plain_note);
+    void editTask(QString name, QString tag, QString note, QDate due, QString status, QString plain_note);
     void show_hide_Note();
     void changeFont();
     void new_list();
