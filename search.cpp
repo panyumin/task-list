@@ -33,14 +33,15 @@ task_list* search::start_search(QString querry,task_list * data)
         for(int j=0; j<data->topLevelItem(i)->childCount();j++)
         {
             QTreeWidgetItem* test=data->topLevelItem(i)->child(j);
-            if(test->text(0).contains(querry,Qt::CaseInsensitive)||
-               test->text(1).contains(querry,Qt::CaseInsensitive)||
-               test->text(4).contains(querry,Qt::CaseInsensitive))
+            if(test->text(NAME_COL).contains(querry,Qt::CaseInsensitive)||
+               test->text(TAG_COL).contains(querry,Qt::CaseInsensitive)||
+               test->text(DATE_COL).contains(querry,Qt::CaseInsensitive)||
+               test->text(PLAINTEXT_COL).contains(querry,Qt::CaseInsensitive))
             {
                 qDebug() << "found a result";
                 QDate dueDate;
-                dueDate = dueDate.fromString(test->text(2),"yyyy-MM-dd");
-                result->addTask(test->text(0), test->text(1), dueDate, test->text(4));
+                dueDate = dueDate.fromString(test->text(DATE_COL),"yyyy-MM-dd");
+                result->addTask(test->text(NAME_COL), test->text(TAG_COL), test->text(NOTE_COL), dueDate, test->text(PLAINTEXT_COL));
             }
         }
 
