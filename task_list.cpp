@@ -584,7 +584,6 @@ void task_list::week_task()
     task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  | Qt::ItemIsDragEnabled);//| Qt::ItemIsEditable);
     list_name->addChild(task_child);
 }
-
 void task_list::reminder_task()
 {
     QTreeWidgetItem* list_name = new QTreeWidgetItem(this,0);
