@@ -79,6 +79,9 @@ private:
     QMenu *Template;
     QAction *new_grocery;
     QAction *new_week_task;
+    QAction *new_reminder_task;
+    QAction *new_cleaning_task;
+    QAction *new_job_task;
 
     QMenu *Sync;
     QAction *new_service;

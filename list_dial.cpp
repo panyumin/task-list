@@ -4,9 +4,9 @@
 list_dial::list_dial(QWidget *parent) :
     QDialog(parent)
 {
-    listname_lab = new QLabel("list name");
-    submitButton = new QPushButton("submit");
-    cancelButton = new QPushButton("cancel");
+    listname_lab = new QLabel("List Name");
+    submitButton = new QPushButton("Submit");
+    cancelButton = new QPushButton("Cancel");
 
     list_name = new QLineEdit;
 
