@@ -26,7 +26,6 @@ SOURCES += main.cpp\
     task_list.cpp \
     list_dial.cpp \
     sync_widget.cpp \
-    sync_server.cpp \
     htmleditor.cpp \
     search.cpp \
     search_dial.cpp
@@ -38,7 +37,6 @@ HEADERS  += mainwindow.h \
     task_list.h \
     list_dial.h \
     sync_widget.h \
-    sync_server.h \
     htmleditor.h \
     html_delegate.h \
     search.h \

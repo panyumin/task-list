@@ -386,6 +386,7 @@ void sync_widget::onTaskListingReturn(GTasks::TaskCollection collection, GTasks:
         QDomElement task_node = gtaskDoc.createElement("task");
         task_node.setAttribute("name", collection.items().at(j).title());
         task_node.setAttribute("note", collection.items().at(j).notes());
+        task_node.setAttribute("plain_note", collection.items().at(j).notes());
         task_node.setAttribute("due", collection.items().at(j).due().toString("yyyy-MM-dd"));
         if(!collection.items().at(j).completed().toString().isEmpty())
         {
@@ -432,7 +433,27 @@ void sync_widget::getFilesGTaskWrite(){
 QDomElement tasks_ele;
 QDomNodeList lists;
 int curr, count;
+
 void sync_widget::sendFilesGTask(){
+    QMessageBox *syncWarning = new QMessageBox(this);
+    syncWarning->setText("Google Tasks does not take HTML-formatted notes OR tags. If pulled back down, the notes will no longer have either (tags, colors, bold, italics, etc). Is this ok?");
+    syncWarning->setIcon(QMessageBox::Warning);
+    syncWarning->addButton(QMessageBox::Ok);
+    syncWarning->addButton(QMessageBox::Cancel);
+
+    switch(syncWarning->exec()){
+    case QMessageBox::Ok:
+        sendFilesGTaskOK();
+        break;
+    case QMessageBox::Cancel:
+        this->hide();
+        break;
+    default:
+        this->hide();
+    }
+}
+
+void sync_widget::sendFilesGTaskOK(){
     emit getSaveFile(saveFilePath);
     QFile file(saveFilePath);
     QDomDocument doc;
@@ -544,7 +565,7 @@ void sync_widget::listCreate(){
         QDomElement task_ele = tasks_ele.childNodes().at(currTask).toElement();
         GTasks::Task *newTask = new GTasks::Task();
         newTask->setTitle(task_ele.attribute("name"));
-        newTask->setNotes(task_ele.attribute("note"));
+        newTask->setNotes(task_ele.attribute("plain_note"));
         QDate dueDate;
         dueDate = dueDate.fromString(task_ele.attribute("due"),"yyyy-MM-dd");
         qDebug() << "dueDateElt: " << task_ele.attribute("due") << "dueDate: " << dueDate.toString();
@@ -609,7 +630,6 @@ sync_widget::sync_widget(QWidget *parent, Qt::WindowFlags f) :
     this->setWindowTitle("Select Service");
     this->setWindowFlags(f);
 
-    myServer = new sync_server(this);
     networkManager = new QNetworkAccessManager(this);
     connect(syncOneBut, SIGNAL(clicked()), this, SLOT(googleClick()));
     connect(syncTwoBut, SIGNAL(clicked()), this, SLOT(dboxClick()));

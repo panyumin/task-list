@@ -20,7 +20,8 @@ task_list::task_list(QWidget *parent) :
     HTMLDelegate* delegate = new HTMLDelegate();
     this->setItemDelegate(delegate);
     show_note=true;
-    this->hideColumn(4);
+    this->hideColumn(5);
+    this->setSortingEnabled(true);
 }
 
 task_list::~task_list()
@@ -52,7 +53,7 @@ void task_list::new_list(QString name)
     else
     {
         QTreeWidgetItem* list_name = new QTreeWidgetItem(this,0);
-        list_name->setText(0,name);
+        list_name->setText(NAME_COL,name);
         list_name->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled );
         this->addTopLevelItem(list_name);
     }
@@ -69,6 +70,7 @@ void task_list::addTask()
     if(t_dial.exec())
     {
         QString task_name = t_dial.task_name->text();
+        QString task_tag = t_dial.task_tag->text();
         QString task_note_html = t_dial.h_edit->textEdit->toHtml();
         QString task_note_plain = t_dial.h_edit->textEdit->toPlainText();
         qDebug() << "HTML: " << task_note_html;
@@ -77,12 +79,12 @@ void task_list::addTask()
         qDebug() << "Plain: " << task_note_plain;
         QDate due_time = t_dial.due_t->date();
 
-        addTask(task_name, task_note_html, due_time, task_note_plain);
+        addTask(task_name, task_tag, task_note_html, due_time, task_note_plain);
 
     }
 }
 
-void task_list::addTask(QString name, QString note, QDate due, QString plain_note)
+void task_list::addTask(QString name, QString tag, QString note, QDate due, QString plain_note)
 {
     //do we have to put some constrain over the input?
     if(name.isEmpty())
@@ -105,13 +107,14 @@ void task_list::addTask(QString name, QString note, QDate due, QString plain_not
         {//we can add the child to this node
             QTreeWidgetItem* task_child = new QTreeWidgetItem(this->topLevelItem(location),1);
 
-            task_child->setText(0,name);
-            task_child->setText(1,note);
-            task_child->setText(2,due.toString("yyyy-MM-dd"));
+            task_child->setText(NAME_COL,name);
+            task_child->setText(TAG_COL, tag);
+            task_child->setText(NOTE_COL,note);
+            task_child->setText(DATE_COL,due.toString("yyyy-MM-dd"));
             //task_child->setData(2,Qt::UserRole,new QVariant(&due));
-            task_child->setCheckState(3,Qt::Unchecked);
+            task_child->setCheckState(CHECK_COL,Qt::Unchecked);
             task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled );//  | Qt::ItemIsEditable);
-            task_child->setText(4, plain_note);
+            task_child->setText(PLAINTEXT_COL, plain_note);
             this->topLevelItem(location)->addChild(task_child);
 
         }
@@ -185,6 +188,7 @@ void task_list::editTask()
     QModelIndex i;
     QString name;
     QString note;
+    QString tag;
     QDate due;
     QString status;
 
@@ -205,9 +209,10 @@ void task_list::editTask()
 
     if( location==-1 && this->currentItem()->type()==1  )
     {//we get a child node and we need to update it.
-       name =  this->currentItem()->text(0);
-       note =  this->currentItem()->text(1);
-       QString tmp_str = this->currentItem()->text(2);
+       name =  this->currentItem()->text(NAME_COL);
+       tag = this->currentItem()->text(TAG_COL);
+       note =  this->currentItem()->text(NOTE_COL);
+       QString tmp_str = this->currentItem()->text(DATE_COL);
        due = QDate::fromString(tmp_str, "yyyy-MM-dd");
 
     }
@@ -219,24 +224,26 @@ void task_list::editTask()
         t_dial.setWindowTitle( tr("Edit Task") );
 
         t_dial.task_name->setText(name);
+        t_dial.task_tag->setText(tag);
         t_dial.h_edit->textEdit->setHtml(note);
         t_dial.due_t->setDate(due);
 
         if(t_dial.exec())
         {
             QString task_name = t_dial.task_name->text();
+            QString task_tag = t_dial.task_tag->text();
             QString task_note_html = t_dial.h_edit->textEdit->toHtml();
             QDate due_time = t_dial.due_t->date();
             QString task_note_plain = t_dial.h_edit->textEdit->toPlainText();
             task_note_html.remove("<meta name=\"qrichtext\" content=\"1\" />");
-            editTask(task_name, task_note_html, due_time, status, task_note_plain);
+            editTask(task_name, task_tag, task_note_html, due_time, status, task_note_plain);
         }
 
     }
 
 }
 
-void task_list::editTask(QString name, QString note, QDate due, QString status, QString plain_note)
+void task_list::editTask(QString name, QString tag, QString note, QDate due, QString status, QString plain_note)
 {
     if(name.isEmpty())
     {
@@ -256,18 +263,19 @@ void task_list::editTask(QString name, QString note, QDate due, QString status, 
         }
         //qDebug() << loc;
 
-        this->currentItem()->setText(0,name);
-        this->currentItem()->setText(1,note);
-        this->currentItem()->setText(2,due.toString("yyyy-MM-dd"));
-        if(this->currentItem()->checkState(3)==Qt::Unchecked)
+        this->currentItem()->setText(NAME_COL,name);
+        this->currentItem()->setText(TAG_COL, tag);
+        this->currentItem()->setText(NOTE_COL,note);
+        this->currentItem()->setText(DATE_COL,due.toString("yyyy-MM-dd"));
+        if(this->currentItem()->checkState(CHECK_COL)==Qt::Unchecked)
         {
-            this->currentItem()->setCheckState(3,Qt::Unchecked);
+            this->currentItem()->setCheckState(CHECK_COL,Qt::Unchecked);
         }
         else
         {
-            this->currentItem()->setCheckState(3,Qt::Checked);
+            this->currentItem()->setCheckState(CHECK_COL,Qt::Checked);
         }
-        this->currentItem()->setText(4, plain_note);
+        this->currentItem()->setText(PLAINTEXT_COL, plain_note);
 
         /*QTreeWidgetItem* task_child = new QTreeWidgetItem( parent_loc,1);
         task_child->setText(0,name);
@@ -361,7 +369,7 @@ void task_list::loadXml(QString fileName)
 
             //create the list
             QTreeWidgetItem* list_name = new QTreeWidgetItem(this,0);
-            list_name->setText(0, tasks_ele.attribute("name","") );
+            list_name->setText(NAME_COL, tasks_ele.attribute("name","") );
             list_name->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsEditable | Qt::ItemIsDragEnabled);
             this->addTopLevelItem(list_name);
 
@@ -375,16 +383,17 @@ void task_list::loadXml(QString fileName)
                 QDomElement task_ele = tasks_ele.childNodes().at(j).toElement();
 
                 QTreeWidgetItem* task_child = new QTreeWidgetItem(list_name,1);
-                task_child->setText(0,task_ele.attribute("name"));
-                task_child->setText(1,task_ele.attribute("note"));
-                task_child->setText(2,task_ele.attribute("due"));
+                task_child->setText(NAME_COL,task_ele.attribute("name"));
+                task_child->setText(TAG_COL, task_ele.attribute("tag"));
+                task_child->setText(NOTE_COL,task_ele.attribute("note"));
+                task_child->setText(DATE_COL,task_ele.attribute("due"));
                 if(task_ele.attribute("status")=="done")
                 {
-                    task_child->setCheckState(3,Qt::Checked);
+                    task_child->setCheckState(CHECK_COL,Qt::Checked);
                 }
                 else if(task_ele.attribute("status")=="not done")
                 {
-                     task_child->setCheckState(3,Qt::Unchecked);
+                     task_child->setCheckState(CHECK_COL,Qt::Unchecked);
                 }
                 else
                 {
@@ -396,7 +405,7 @@ void task_list::loadXml(QString fileName)
                     error_type = 1;
                 }
 
-                task_child->setText(4, task_ele.attribute("plain_note"));
+                task_child->setText(PLAINTEXT_COL, task_ele.attribute("plain_note"));
                 task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled );//| Qt::ItemIsEditable);
                 list_name->addChild(task_child);
 
@@ -428,17 +437,18 @@ void task_list::writeXml(QString fileName)
     for(int i=0; i<this->topLevelItemCount(); i++)
     {
         QDomElement list_node = doc.createElement("list");
-        list_node.setAttribute("name", this->topLevelItem(i)->text(0));
+        list_node.setAttribute("name", this->topLevelItem(i)->text(NAME_COL));
         root.appendChild(list_node);
 
         QTreeWidgetItem* parent_loc = this->topLevelItem(i);
         for(int j=0; j<parent_loc->childCount(); j++)
         {
             QDomElement task_node = doc.createElement("task");
-            task_node.setAttribute("name", parent_loc->child(j)->text(0));
-            task_node.setAttribute("note", parent_loc->child(j)->text(1));
-            task_node.setAttribute("due", parent_loc->child(j)->text(2));
-            if( parent_loc->child(j)->checkState(3)==Qt::Checked)
+            task_node.setAttribute("name", parent_loc->child(j)->text(NAME_COL));
+            task_node.setAttribute("tag", parent_loc->child(j)->text(TAG_COL));
+            task_node.setAttribute("note", parent_loc->child(j)->text(NOTE_COL));
+            task_node.setAttribute("due", parent_loc->child(j)->text(DATE_COL));
+            if( parent_loc->child(j)->checkState(CHECK_COL)==Qt::Checked)
             {
                 task_node.setAttribute("status", "done");
             }
@@ -446,7 +456,7 @@ void task_list::writeXml(QString fileName)
             {
                 task_node.setAttribute("status", "not done");
             }
-            task_node.setAttribute("plain_note", parent_loc->child(j)->text(4));
+            task_node.setAttribute("plain_note", parent_loc->child(j)->text(PLAINTEXT_COL));
             list_node.appendChild(task_node);
         }
     }

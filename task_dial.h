@@ -19,6 +19,7 @@ class task_dial : public QDialog
 public:
     explicit task_dial(QWidget *parent = 0);
     QLineEdit *task_name;
+    QLineEdit *task_tag;
     QDateEdit *due_t;
     htmleditor* h_edit;
 
@@ -29,6 +30,7 @@ public slots:
 
 private:
     QLabel *taskname_lab;
+    QLabel *task_tag_lab;
     QLabel *tasknote_lab;
     QLabel *due_time_lab;
     QPushButton *submitButton;
