@@ -48,6 +48,9 @@ public slots:
     void move_down();
     void grocery();
     void week_task();
+    void cleaning_task();
+    void reminder_task();
+    void job_task();
 
 private:
     void initial();

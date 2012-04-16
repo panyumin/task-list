@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle("Task List");
 
     search_gen = new search;
+    my_search_dial = new search_dial;
 
 }
 
@@ -222,6 +223,15 @@ void MainWindow::initial()
     new_week_task = new QAction(tr("&Weekly Task"),this);
     Template->addAction(new_week_task);
 
+    new_reminder_task = new QAction(tr("&Reminder List"), this);
+    Template->addAction(new_reminder_task);
+
+    new_cleaning_task = new QAction(tr("&Cleaning List"), this);
+    Template->addAction(new_cleaning_task);
+
+    new_job_task = new QAction(tr("&Job List"), this);
+    Template->addAction(new_job_task);
+
     Sync = menuBar()->addMenu(tr("&Sync Menu"));
 
     new_service = new QAction(tr("&Add Service"), this);
@@ -294,6 +304,15 @@ void MainWindow::initial()
 
     connect(new_week_task, SIGNAL(triggered()),
             this->my_task_list, SLOT(week_task()));
+
+    connect(new_reminder_task, SIGNAL(triggered()),
+            this->my_task_list, SLOT(reminder_task()));
+
+    connect(new_cleaning_task, SIGNAL(triggered()),
+            this->my_task_list, SLOT(cleaning_task()));
+
+    connect(new_job_task, SIGNAL(triggered()),
+            this->my_task_list, SLOT(job_task()));
 
     connect(new_service, SIGNAL(triggered()),
             this, SLOT(newServiceClick()));
@@ -384,13 +403,15 @@ void MainWindow::print()
 }
 
 void MainWindow::search_start(){
-    my_search_dial = new search_dial;
+    connect(my_search_dial, SIGNAL(emitSearch(QString)), this, SLOT(searchRecv(QString)));
     if(my_search_dial->exec()){
-
-        connect(my_search_dial, SIGNAL(emitSearch(QString)), this, SLOT(searchRecv(QString)));
+        my_search_dial->search_editor->setText("");
     }
+    disconnect(my_search_dial, SIGNAL(emitSearch(QString)), this, SLOT(searchRecv(QString)));
 }
 
 void MainWindow::searchRecv(QString searchText){
-    this->search_gen->start_search(searchText, this->my_task_list);
+    task_list* my_result_list= this->search_gen->start_search(searchText, this->my_task_list);
+    my_result_list->writeXml("search.xml");
+    my_task_list->loadXml("search.xml");
 }

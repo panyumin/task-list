@@ -31,7 +31,15 @@ background-color: white;
 }
 
 tasklist_templates{
-background-color: #BBDDFF;
+background-color: #BBDDEE;
+}
+
+list_dial{
+background-color: #BBDDEE;
+}
+
+sync_widget{
+background-color: #BBDDEE;
 }
 
 QCheckBox {

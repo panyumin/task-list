@@ -32,7 +32,7 @@ task_list::~task_list()
 void task_list::new_list()
 {
     list_dial t_dial;
-    t_dial.setWindowTitle( tr("Add new Task") );
+    t_dial.setWindowTitle( tr("New") );
 
     if(t_dial.exec())
     {
@@ -584,7 +584,161 @@ void task_list::week_task()
     task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  | Qt::ItemIsDragEnabled);//| Qt::ItemIsEditable);
     list_name->addChild(task_child);
 }
+void task_list::reminder_task()
+{
+    QTreeWidgetItem* list_name = new QTreeWidgetItem(this,0);
+    list_name->setText(0,"reminder");
+    list_name->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsEditable);
+    this->addTopLevelItem(list_name);
 
+    QTreeWidgetItem* task_child;
+    QDate currDate = QDate::currentDate();
+
+    //add preset items
+    task_child = new QTreeWidgetItem(list_name,1);
+    task_child->setText(0,"Pay Electric Bill");
+    task_child->setText(1,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
+    task_child->setCheckState(3,Qt::Unchecked);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  );//| Qt::ItemIsEditable);
+    list_name->addChild(task_child);
+
+    task_child = new QTreeWidgetItem(list_name,1);
+    task_child->setText(0,"Mow the Lawn");
+    task_child->setText(1,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
+    task_child->setCheckState(3,Qt::Unchecked);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  );//| Qt::ItemIsEditable);
+    list_name->addChild(task_child);
+
+    task_child = new QTreeWidgetItem(list_name,1);
+    task_child->setText(0,"Call your Parents");
+    task_child->setText(1,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
+    task_child->setCheckState(3,Qt::Unchecked);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  );//| Qt::ItemIsEditable);
+    list_name->addChild(task_child);
+
+    task_child = new QTreeWidgetItem(list_name,1);
+    task_child->setText(0,"Wash the Car");
+    task_child->setText(1,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
+    task_child->setCheckState(3,Qt::Unchecked);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  );//| Qt::ItemIsEditable);
+    list_name->addChild(task_child);
+
+    task_child = new QTreeWidgetItem(list_name,1);
+    task_child->setText(0,"Change Air Filters");
+    task_child->setText(1,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
+    task_child->setCheckState(3,Qt::Unchecked);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  );//| Qt::ItemIsEditable);
+    list_name->addChild(task_child);
+}
+
+void task_list::cleaning_task()
+{
+    QTreeWidgetItem* list_name = new QTreeWidgetItem(this,0);
+    list_name->setText(0,"cleaning");
+    list_name->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsEditable);
+    this->addTopLevelItem(list_name);
+
+    QTreeWidgetItem* task_child;
+    QDate currDate = QDate::currentDate();
+
+    //add preset items
+    task_child = new QTreeWidgetItem(list_name,1);
+    task_child->setText(0,"Sweep the Floor");
+    task_child->setText(1,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
+    task_child->setCheckState(3,Qt::Unchecked);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  );//| Qt::ItemIsEditable);
+    list_name->addChild(task_child);
+
+    task_child = new QTreeWidgetItem(list_name,1);
+    task_child->setText(0,"Mop the Bathroom");
+    task_child->setText(1,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
+    task_child->setCheckState(3,Qt::Unchecked);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  );//| Qt::ItemIsEditable);
+    list_name->addChild(task_child);
+
+    task_child = new QTreeWidgetItem(list_name,1);
+    task_child->setText(0,"Empty the Gutter");
+    task_child->setText(1,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
+    task_child->setCheckState(3,Qt::Unchecked);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  );//| Qt::ItemIsEditable);
+    list_name->addChild(task_child);
+
+    task_child = new QTreeWidgetItem(list_name,1);
+    task_child->setText(0,"Change Water Filter");
+    task_child->setText(1,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
+    task_child->setCheckState(3,Qt::Unchecked);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  );//| Qt::ItemIsEditable);
+    list_name->addChild(task_child);
+
+    task_child = new QTreeWidgetItem(list_name,1);
+    task_child->setText(0,"Burn Leaves");
+    task_child->setText(1,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
+    task_child->setCheckState(3,Qt::Unchecked);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  );//| Qt::ItemIsEditable);
+    list_name->addChild(task_child);
+}
+
+void task_list::job_task()
+{
+    QTreeWidgetItem* list_name = new QTreeWidgetItem(this,0);
+    list_name->setText(0,"job");
+    list_name->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled | Qt::ItemIsEditable);
+    this->addTopLevelItem(list_name);
+
+    QTreeWidgetItem* task_child;
+    QDate currDate = QDate::currentDate();
+
+    //add preset items
+    task_child = new QTreeWidgetItem(list_name,1);
+    task_child->setText(0,"Debug Nuclear Plant Software");
+    task_child->setText(1,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
+    task_child->setCheckState(3,Qt::Unchecked);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  );//| Qt::ItemIsEditable);
+    list_name->addChild(task_child);
+
+    task_child = new QTreeWidgetItem(list_name,1);
+    task_child->setText(0,"Compose new Commercial");
+    task_child->setText(1,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
+    task_child->setCheckState(3,Qt::Unchecked);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  );//| Qt::ItemIsEditable);
+    list_name->addChild(task_child);
+
+    task_child = new QTreeWidgetItem(list_name,1);
+    task_child->setText(0,"Fishing");
+    task_child->setText(1,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
+    task_child->setCheckState(3,Qt::Unchecked);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  );//| Qt::ItemIsEditable);
+    list_name->addChild(task_child);
+
+    task_child = new QTreeWidgetItem(list_name,1);
+    task_child->setText(0,"Hire Lead");
+    task_child->setText(1,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
+    task_child->setCheckState(3,Qt::Unchecked);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  );//| Qt::ItemIsEditable);
+    list_name->addChild(task_child);
+
+    task_child = new QTreeWidgetItem(list_name,1);
+    task_child->setText(0,"Fire Lead");
+    task_child->setText(1,"");
+    task_child->setText(2,currDate.toString("yyyy-MM-dd"));
+    task_child->setCheckState(3,Qt::Unchecked);
+    task_child->setFlags(Qt::ItemIsSelectable | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled  );//| Qt::ItemIsEditable);
+    list_name->addChild(task_child);
+}
 
 //the following part is the drag and drop implemention
 bool task_list::dropMimeData(QTreeWidgetItem *parent, int index, const QMimeData *data, Qt::DropAction action)
@@ -762,5 +916,4 @@ void task_list::mouseMoveEvent(QMouseEvent *event)
         drag->start( Qt::CopyAction | Qt::MoveAction);
 
     }
-
 }
