@@ -7,14 +7,14 @@ search::search()
 
 task_list* search::start_search(QString querry,task_list * data)
 {
-    task_list* result=new task_list;
+
     //throw error if there was no string passed.
     qDebug() << "search started";
     if(querry.isEmpty()||querry.isNull())
     {
         QMessageBox::warning(this,QString("Error Empty Search String"),
                              QString("Search received an Empty or NULL string, this is not valid for a search"));
-        return result;
+        return NULL;
     }
 
 
@@ -22,14 +22,16 @@ task_list* search::start_search(QString querry,task_list * data)
     {
         QMessageBox::warning(this,QString("Error No Tasks to Search"),
                              QString("Search was passed a set of data that contained no tasks"));
-        return result;
+        return NULL;
     }
+    task_list* result=new task_list;
 
-    result->new_list(querry);
-    result->setCurrentItem(result->topLevelItem(0));
+    //result->new_list("\"" + querry + "\" results");
+    //result->setCurrentItem(result->topLevelItem(0));
 
     for(int i=0;i<data->topLevelItemCount();i++)
     {
+        bool listExists = false;
         for(int j=0; j<data->topLevelItem(i)->childCount();j++)
         {
             QTreeWidgetItem* test=data->topLevelItem(i)->child(j);
@@ -38,6 +40,11 @@ task_list* search::start_search(QString querry,task_list * data)
                test->text(DATE_COL).contains(querry,Qt::CaseInsensitive)||
                test->text(PLAINTEXT_COL).contains(querry,Qt::CaseInsensitive))
             {
+                if(!listExists){
+                    result->new_list(data->topLevelItem(i)->text(NAME_COL));
+                    result->setCurrentItem(result->topLevelItem(result->topLevelItemCount()-1));
+                    listExists = true;
+                }
                 qDebug() << "found a result";
                 QDate dueDate;
                 dueDate = dueDate.fromString(test->text(DATE_COL),"yyyy-MM-dd");

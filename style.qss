@@ -46,6 +46,14 @@ QInputDialog{
 background-color: #BBDDEE;
 }
 
+QDialog{
+background-color: #BBDDEE;
+}
+
+search_dial{
+background-color: #BBDDEE;
+}
+
 QCheckBox {
 font-family: "Calibri";
 font-size: 15px;

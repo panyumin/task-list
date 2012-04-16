@@ -21,5 +21,23 @@
         <file>images/delete.png</file>
         <file>images/search.png</file>
         <file>images/new_task.png</file>
+        <file>images/new.png</file>
+        <file>images/open.png</file>
+        <file>images/save.png</file>
+        <file>images/dropbox.png</file>
+        <file>images/gtasks.png</file>
+        <file>images/add_service.png</file>
+        <file>images/clear.png</file>
+        <file>images/exit.png</file>
+        <file>images/google.png</file>
+        <file>images/grocery.png</file>
+        <file>images/job.png</file>
+        <file>images/print.png</file>
+        <file>images/reminder.png</file>
+        <file>images/save_as.png</file>
+        <file>images/show_hide.png</file>
+        <file>images/sync.png</file>
+        <file>images/week.png</file>
+        <file>images/main_task.png</file>
     </qresource>
 </RCC>
