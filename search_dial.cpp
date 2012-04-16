@@ -21,6 +21,7 @@ search_dial::search_dial(QWidget *parent) :
     setLayout(main_layout);
 
     connect(submitButton, SIGNAL(clicked()), this, SLOT(submitClicked()));
+    connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 }
 
 void search_dial::submitClicked(){
@@ -29,4 +30,5 @@ void search_dial::submitClicked(){
     qDebug() << "search input: " << input;
 
     emit emitSearch(input);
+    this->accept();
 }
