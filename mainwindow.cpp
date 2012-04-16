@@ -133,6 +133,9 @@ void MainWindow::initial()
     connect(my_sync_widget, SIGNAL(googleRecvResult(bool)), this, SLOT(googleRecvStatus(bool)));
     connect(my_sync_widget, SIGNAL(googleSendResult(bool)), this, SLOT(googleSendStatus(bool)));
 
+
+    listToolBar = new QToolBar("List");
+
     fileMenu = menuBar()->addMenu(tr("&File"));
 
     newList = new QAction( tr("&New lists..."), this );
@@ -159,7 +162,6 @@ void MainWindow::initial()
     fileMenu->addAction(saveAsAction);
     connect(saveAsAction, SIGNAL(triggered()),
             this, SLOT(saveasFile()));
-
     fileMenu->addSeparator();
 
 
@@ -176,14 +178,43 @@ void MainWindow::initial()
     connect(exitAction, SIGNAL(triggered()),
             this, SLOT(close()));
 
-    OptMenu = menuBar()->addMenu(tr("&Options"));
+    //list menu
+    listMenu = menuBar()->addMenu(tr("&List"));
+    addAct = new QAction(QIcon(":/style/all/images/new_task.png"),tr("&Add task"),this);
+    addAct->setShortcut(tr("Ctrl+A"));
+    listMenu->addAction(addAct);
+    listToolBar->addAction(addAct);
 
-    change_font = new QAction(tr("&Change Font"),this);
-    OptMenu->addAction(change_font);
+
+    connect(addAct, SIGNAL(triggered()),
+            this->my_task_list,SLOT(addTask()));
+
+    editAct = new QAction(QIcon(":/style/all/images/edit.png"),tr("&Edit task"), this);
+    editAct->setShortcut(tr("Ctrl+E"));
+    listMenu->addAction(editAct);
+    listToolBar->addAction(editAct);
+    editAct->setCheckable(false);
+//    connect(this->my_task_list, SIGNAL(itemSelectionChanged()),
+//            editAct,SLOT(setEnabled(bool)));
+
+    connect(editAct, SIGNAL(triggered()),
+            this->my_task_list,SLOT(editTask()));
+
+    delAct = new QAction(QIcon(":/style/all/images/delete.png"),tr("&Delete"),this);
+    delAct->setShortcut(QKeySequence::Delete);
+    listMenu->addAction(delAct);
+    listToolBar->addAction(delAct);
+
+    connect(delAct, SIGNAL(triggered()),
+            this->my_task_list,SLOT(delTask()));
+
+
+    listMenu->addSeparator();
 
     display_note = new QAction(tr("&Display/Hide Note"), this);
-    OptMenu->addAction(display_note);
+    listMenu->addAction(display_note);
 
+    //template menu
     Template = menuBar()->addMenu(tr("&Template"));
 
     new_grocery = new QAction(tr("&Groceries"),this);
@@ -225,100 +256,48 @@ void MainWindow::initial()
     send_service_gtask->setDisabled(true);
     get_service_gtask->setDisabled(true);
 
-    addTask = new QPushButton( tr("Add Task") );
-    delTask = new QPushButton( tr("Delete") );
-    editTask = new QPushButton( tr("Edit Task") );
-    pop_up = new QPushButton(tr("Pop Task Up"));
-    move_down = new QPushButton(tr("Move Task Down"));
     search_button = new QPushButton(tr("Search"));
 
     QWidget *main_widget = new QWidget;
 
     QVBoxLayout *main_layout = new QVBoxLayout;
-    QHBoxLayout *button_layout1 = new QHBoxLayout;
     QHBoxLayout *button_layout2 = new QHBoxLayout;
-
-    //here is the list name area
-    //main_layout->addWidget( new QLabel(tr("Lists name")),0,Qt::AlignCenter );
-    //main_layout->addWidget(my_task_list->lists_name);
 
 
     this->my_task_list->setColumnCount(4);
+    this->my_task_list->setDragEnabled(true);
+    this->my_task_list->viewport()->setAcceptDrops(true);
+    this->my_task_list->setDropIndicatorShown(true);
+    this->my_task_list->setDragDropMode(QAbstractItemView::DragDrop);
     QStringList tmp_l;
     tmp_l << "Name" << "Note" << "Due Date" << "Status";
     this->my_task_list->setHeaderLabels(tmp_l );
 
+
     this->my_task_list->setEditTriggers(QAbstractItemView::DoubleClicked);
     this->my_task_list->setSelectionMode(QAbstractItemView::SingleSelection);
     this->my_task_list->setSelectionBehavior(QAbstractItemView::SelectRows);
-    //here is the table content
-    /*QStandardItemModel *tmp_mod = my_task_list->mod;
-    tmp_mod->setColumnCount(4);
-    tmp_mod->setHeaderData(0, Qt::Horizontal, tr("Name"));
-    tmp_mod->setHeaderData(1,Qt::Horizontal, tr("Note"));
-    tmp_mod->setHeaderData(2,Qt::Horizontal, tr("Due date"));
-    tmp_mod->setHeaderData(3,Qt::Horizontal, tr("Status"));
-    my_task_list->table->setModel(tmp_mod);
-    my_task_list->table->setEditTriggers(QAbstractItemView::DoubleClicked);
-    my_task_list->table->setSelectionMode(QAbstractItemView::SingleSelection);
-    my_task_list->table->setSelectionBehavior(QAbstractItemView::SelectRows);*/
-
-    /*QTreeWidgetItem* task_child = new QTreeWidgetItem(this->my_task_list,0);
-    task_child->setText(0,"a");
-    this->my_task_list->addTopLevelItem(task_child);
-    QTreeWidgetItem* task_child1 = new QTreeWidgetItem(task_child,1);
-    task_child1->setText(0,"1");
-    QTreeWidgetItem* task_child2 = new QTreeWidgetItem(task_child,1);
-    task_child2->setText(0,"2");
-    QTreeWidgetItem* task_child3 = new QTreeWidgetItem(task_child,1);
-    task_child3->setText(0,"3");
-    task_child->addChild(task_child1);
-        task_child->addChild(task_child2);
-            task_child->addChild(task_child3);
-            QTreeWidgetItem* task_child4 = new QTreeWidgetItem(task_child,1);
-            task_child4->setText(0,"0");
-            task_child->insertChild(-2,task_child4);
-    */
 
 
+    main_layout->addWidget(listToolBar);
     main_layout->addWidget( new QLabel(tr("Current Lists")),0,Qt::AlignCenter );
     main_layout->addWidget(this->my_task_list);
 
-    button_layout1->addWidget(addTask);
-    button_layout1->addWidget(delTask);
-    button_layout1->addWidget(editTask);
 
-    button_layout2->addWidget(pop_up);
-    button_layout2->addWidget(move_down);
     button_layout2->addWidget(search_button);
 
-    main_layout->addLayout(button_layout1);
     main_layout->addLayout(button_layout2);
     main_widget->setLayout(main_layout);
     main_widget->setMinimumSize(430,500);
     this->setCentralWidget(main_widget);
 
     //connection
-    connect(addTask, SIGNAL(clicked()),
-            this->my_task_list,SLOT(addTask()));
 
-    connect(delTask, SIGNAL(clicked()),
-            this->my_task_list,SLOT(delTask()));
-
-    connect(editTask, SIGNAL(clicked()),
+    connect(this->my_task_list, SIGNAL(doubleClicked(QModelIndex)),
             this->my_task_list, SLOT(editTask()));
 
     connect(display_note, SIGNAL(triggered()),
             this->my_task_list, SLOT(show_hide_Note()));//the action one in the menu
-
-    connect(change_font, SIGNAL(triggered()),
-            this->my_task_list, SLOT(changeFont()));
-
-    connect(pop_up, SIGNAL(clicked()),
-            this->my_task_list, SLOT(pop_up()));
-
-    connect(move_down, SIGNAL(clicked()),
-            this->my_task_list, SLOT(move_down()));
 
     connect(new_grocery, SIGNAL(triggered()),
             this->my_task_list, SLOT(grocery()));
