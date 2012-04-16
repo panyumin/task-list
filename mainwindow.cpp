@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     my_sync_widget->m_oauthHelper = new OAuth::Helper(this);
     initial();
     setWindowTitle("Task List");
+    setWindowIcon(QIcon(":/style/all/images/main_task.png"));
 
     search_gen = new search;
     my_search_dial = new search_dial;
@@ -113,6 +114,7 @@ void MainWindow::serviceAdded(QString &serviceType){
 
 void MainWindow::openXmlRecv(QString &filename){
     this->my_task_list->loadXml(filename);
+    this->current_list->setText(filename);
 }
 
 void MainWindow::initial()
@@ -138,26 +140,26 @@ void MainWindow::initial()
 
     fileMenu = menuBar()->addMenu(tr("&File"));
 
-    newList = new QAction( tr("&New lists..."), this );
+    newList = new QAction(QIcon(":/style/all/images/new.png"), tr("&New lists..."), this );
     newList->setShortcuts(QKeySequence::New);
     fileMenu->addAction(newList);
     connect(newList, SIGNAL(triggered()),
             this->my_task_list,SLOT(new_list()));
 
     fileMenu->addSeparator();
-    loadAction = new QAction(tr("&Open XML..."), this);
+    loadAction = new QAction(QIcon(":/style/all/images/open.png"), tr("&Open XML..."), this);
     loadAction->setShortcuts(QKeySequence::Open);
     fileMenu->addAction(loadAction);
     connect(loadAction, SIGNAL(triggered()),
             this, SLOT(loadFile()));
 
-    saveAction = new QAction( tr("&Save..."), this );
+    saveAction = new QAction(QIcon(":/style/all/images/save.png"),tr("&Save..."), this );
     saveAction->setShortcuts(QKeySequence::Save);
     fileMenu->addAction(saveAction);
     connect(saveAction, SIGNAL(triggered()),
             this, SLOT(saveFile()));
 
-    saveAsAction = new QAction( tr("&Save as..."), this );
+    saveAsAction = new QAction(QIcon(":/style/all/images/save_as.png"), tr("&Save as..."), this );
     //saveAsAction->setShortcuts(QKeySequence::SaveAs);
     fileMenu->addAction(saveAsAction);
     connect(saveAsAction, SIGNAL(triggered()),
@@ -165,7 +167,7 @@ void MainWindow::initial()
     fileMenu->addSeparator();
 
 
-    printAction = new QAction(tr("&Print"),this);
+    printAction = new QAction(QIcon(":/style/all/images/print.png"), tr("&Print"),this);
     printAction->setShortcuts(QKeySequence::Print);
     fileMenu->addAction(printAction);
     connect(printAction, SIGNAL(triggered()),
@@ -173,7 +175,7 @@ void MainWindow::initial()
 
     fileMenu->addSeparator();
 
-    exitAction = new QAction(tr("&Exit"), this);
+    exitAction = new QAction(QIcon(":/style/all/images/exit.png"),tr("&Exit"), this);
     fileMenu->addAction(exitAction);
     connect(exitAction, SIGNAL(triggered()),
             this, SLOT(close()));
@@ -211,49 +213,50 @@ void MainWindow::initial()
 
     listMenu->addSeparator();
 
-    display_note = new QAction(tr("&Display/Hide Note"), this);
+    display_note = new QAction(QIcon(":/style/all/images/show_hide.png"),tr("&Display/Hide Note"), this);
     listMenu->addAction(display_note);
 
     listMenu->addSeparator();
 
-    search_for = new QAction(tr("&Search..."), this);
+    search_for = new QAction(QIcon(":/style/all/images/search.png"), tr("&Search..."), this);
     search_for->setShortcut(QKeySequence::Find);
     listMenu->addAction(search_for);
+    listToolBar->addAction(search_for);
     connect(search_for, SIGNAL(triggered()), this, SLOT(search_start()));
 
     //template menu
     Template = menuBar()->addMenu(tr("&Template"));
 
-    new_grocery = new QAction(tr("&Groceries"),this);
+    new_grocery = new QAction(QIcon(":/style/all/images/grocery.png"),tr("&Groceries"),this);
     Template->addAction(new_grocery);
 
-    new_week_task = new QAction(tr("&Weekly Task"),this);
+    new_week_task = new QAction(QIcon(":/style/all/images/week.png"),tr("&Weekly Task"),this);
     Template->addAction(new_week_task);
 
-    new_reminder_task = new QAction(tr("&Reminder List"), this);
+    new_reminder_task = new QAction(QIcon(":/style/all/images/reminder.png"),tr("&Reminder List"), this);
     Template->addAction(new_reminder_task);
 
-    new_cleaning_task = new QAction(tr("&Cleaning List"), this);
+    new_cleaning_task = new QAction(QIcon(":/style/all/images/clear.png"),tr("&Cleaning List"), this);
     Template->addAction(new_cleaning_task);
 
-    new_job_task = new QAction(tr("&Job List"), this);
+    new_job_task = new QAction(QIcon(":/style/all/images/job.png"),tr("&Job List"), this);
     Template->addAction(new_job_task);
 
     Sync = menuBar()->addMenu(tr("&Sync Menu"));
 
-    new_service = new QAction(tr("&Add Service"), this);
+    new_service = new QAction(QIcon(":/style/all/images/add_service.png"),tr("&Add Service"), this);
     Sync->addAction(new_service);
-    sync_service = new QAction(tr("&Sync Services (On)"), this);
+    sync_service = new QAction(QIcon(":/style/all/images/sync.png"),tr("&Sync Services - On"), this);
     Sync->addAction(sync_service);
-    sync_service_off = new QAction(tr("&Sync Services Off"), this);
+    sync_service_off = new QAction(QIcon(":/style/all/images/sync.png"),tr("&Sync Services - Off"), this);
     Sync->addAction(sync_service_off);
-    send_service = new QAction(tr("&Send Current File"), this);
+    send_service = new QAction(QIcon(":/style/all/images/dropbox.png"),tr("&Send Current File (DBox)"), this);
     Sync->addAction(send_service);
-    get_service = new QAction(tr("&Get Dropbox Files"), this);
+    get_service = new QAction(QIcon(":/style/all/images/dropbox.png"),tr("&Get Dropbox Files"), this);
     Sync->addAction(get_service);
-    send_service_gtask = new QAction(tr("&Send Current File (GTask)"), this);
+    send_service_gtask = new QAction(QIcon(":/style/all/images/google.png"),tr("&Send Current File (GTask)"), this);
     Sync->addAction(send_service_gtask);
-    get_service_gtask = new QAction(tr("&Get GTask Files"), this);
+    get_service_gtask = new QAction(QIcon(":/style/all/images/google.png"),tr("&Get GTask Files"), this);
     Sync->addAction(get_service_gtask);
 
     sync_service->setDisabled(true);
@@ -263,22 +266,20 @@ void MainWindow::initial()
     send_service_gtask->setDisabled(true);
     get_service_gtask->setDisabled(true);
 
-    search_button = new QPushButton(tr("Search"));
-
     QWidget *main_widget = new QWidget;
 
     QVBoxLayout *main_layout = new QVBoxLayout;
-    QHBoxLayout *button_layout2 = new QHBoxLayout;
 
-
+    list_header << "Name" << "Note"<< "Tag" << "Due Date" << "Status";
     this->my_task_list->setColumnCount(5);
+    this->my_task_list->setHeaderLabels(list_header );
+
     this->my_task_list->setDragEnabled(true);
     this->my_task_list->viewport()->setAcceptDrops(true);
     this->my_task_list->setDropIndicatorShown(true);
     this->my_task_list->setDragDropMode(QAbstractItemView::DragDrop);
-    QStringList tmp_l;
-    tmp_l << "Name" << "Note"<< "Tag" << "Due Date" << "Status";
-    this->my_task_list->setHeaderLabels(tmp_l );
+
+
 
 
     this->my_task_list->setEditTriggers(QAbstractItemView::DoubleClicked);
@@ -286,14 +287,15 @@ void MainWindow::initial()
     this->my_task_list->setSelectionBehavior(QAbstractItemView::SelectRows);
 
 
+    current_list = new QLabel(tr("Current Lists"));
     main_layout->addWidget(listToolBar);
-    main_layout->addWidget( new QLabel(tr("Current Lists")),0,Qt::AlignCenter );
+    main_layout->addWidget(current_list,0,Qt::AlignCenter );
     main_layout->addWidget(this->my_task_list);
 
 
-    button_layout2->addWidget(search_button);
+    //button_layout2->addWidget(search_button);
 
-    main_layout->addLayout(button_layout2);
+    //main_layout->addLayout(button_layout2);
     main_widget->setLayout(main_layout);
     main_widget->setMinimumSize(520,500);
     this->setCentralWidget(main_widget);
@@ -337,7 +339,7 @@ void MainWindow::initial()
     connect(get_service_gtask, SIGNAL(triggered()),
             this->my_sync_widget, SLOT(getFilesGTask()));
 
-    connect(search_button, SIGNAL(clicked()), this, SLOT(search_start()));
+    //connect(search_button, SIGNAL(clicked()), this, SLOT(search_start()));
 
 }
 
@@ -347,6 +349,7 @@ void MainWindow::loadFile()
     if (!fileName.isEmpty())
     {
         this->my_task_list->loadXml(fileName);
+        this->current_list->setText(fileName);
     }
 
 }
@@ -357,6 +360,7 @@ void MainWindow::saveasFile()
     if (!fileName.isEmpty())
     {
         this->my_task_list->writeXml(fileName);
+        this->current_list->setText(fileName);
     }
 
 }
@@ -373,6 +377,7 @@ void MainWindow::saveFile()
         if (!fileName.isEmpty())
         {
             this->my_task_list->writeXml(fileName);
+            this->current_list->setText(fileName);
         }
     }
 }
@@ -389,6 +394,7 @@ void MainWindow::syncSaveFile(QString &syncPathName)
         if (!fileName.isEmpty())
         {
             this->my_task_list->writeXml(fileName);
+            this->current_list->setText(fileName);
         }
     }
 
@@ -419,6 +425,18 @@ void MainWindow::search_start(){
 
 void MainWindow::searchRecv(QString searchText){
     task_list* my_result_list= this->search_gen->start_search(searchText, this->my_task_list);
-    my_result_list->writeXml("search.xml");
-    my_task_list->loadXml("search.xml");
+    if(my_result_list != NULL){
+        my_result_list->setColumnCount(5);
+        my_result_list->setHeaderLabels(list_header);
+        my_result_list->setColumnWidth(0, 100);
+        my_result_list->writeXml("search.xml");
+
+        QDialog *my_result_box = new QDialog(this);
+        my_result_box->setWindowTitle("Search Result");
+        QVBoxLayout *result_layout = new QVBoxLayout;
+        result_layout->addWidget(my_result_list);
+        my_result_box->setLayout(result_layout);
+        my_result_box->setMinimumSize(520,300);
+        my_result_box->exec();
+    }
 }

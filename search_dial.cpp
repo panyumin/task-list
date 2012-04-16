@@ -3,7 +3,7 @@
 search_dial::search_dial(QWidget *parent) :
     QDialog(parent)
 {
-    search_label=new QLabel("enter your search text");
+    search_label=new QLabel("Enter Search Text");
     submitButton=new QPushButton("Search");
     cancelButton=new QPushButton("Cancel");
     search_editor=new QLineEdit;
@@ -19,6 +19,7 @@ search_dial::search_dial(QWidget *parent) :
     main_layout->addLayout(buttons_layout);
 
     setLayout(main_layout);
+    this->setWindowTitle("Search");
 
     connect(submitButton, SIGNAL(clicked()), this, SLOT(submitClicked()));
     connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
