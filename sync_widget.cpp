@@ -102,10 +102,10 @@ void sync_widget::syncFiles() {
         //this->getRequest();
     }
 
-    if(googleAuth.tokenSecret() != ""){
-        this->sendFilesGTask();
+    //if(googleAuth.tokenSecret() != ""){
+    //    this->sendFilesGTask();
         //this->getFilesGTask();
-    }
+    //}
 }
 
 void sync_widget::sendFiles() {
@@ -139,12 +139,24 @@ void sync_widget::onTemporaryTokenReceived(OAuth::Token token)
 
         dboxTempToken = token;
 
-        QMessageBox *authorized = new QMessageBox(this);
+        QDialog *authorized = new QDialog(this);
         authorized->setWindowTitle("Authorization");
-        authorized->setText("User authorized?");
-        authorized->setButtonText(0, "Complete");
+        QLabel *authorized_lab = new QLabel("User Authorized?");
+        QPushButton *accept_but = new QPushButton("Yes");
+        QPushButton *reject_but = new QPushButton("No");
+
+        QVBoxLayout *authorized_layout = new QVBoxLayout;
+        authorized_layout->addWidget(authorized_lab, 0, Qt::AlignHCenter);
+        QHBoxLayout *authorized_layout_But = new QHBoxLayout;
+        authorized_layout_But->addWidget(accept_but);
+        authorized_layout_But->addWidget(reject_but);
+        authorized_layout->addLayout(authorized_layout_But);
+
+        authorized->setLayout(authorized_layout);
         authorized->show();
-        connect(authorized, SIGNAL(buttonClicked(QAbstractButton*)), this, SLOT(getDboxAccess()));
+        connect(accept_but, SIGNAL(clicked()), this, SLOT(getDboxAccess()));
+        connect(accept_but, SIGNAL(clicked()), authorized, SLOT(close()));
+        connect(reject_but, SIGNAL(clicked()), this, SLOT(hide()));
     }
     else{
         qDebug() << "Error in retrieving the request token";
@@ -286,8 +298,7 @@ void sync_widget::getRequestFiles(){
     else{
         qDebug() << "no more files";
         emit dboxRecvResult(true);
-        if(googleAuth.tokenSecret() == "")
-            syncCall = false;
+        syncCall = false;
     }
 }
 
@@ -440,6 +451,7 @@ void sync_widget::sendFilesGTask(){
     syncWarning->setIcon(QMessageBox::Warning);
     syncWarning->addButton(QMessageBox::Ok);
     syncWarning->addButton(QMessageBox::Cancel);
+    syncWarning->setWindowTitle("Tasks Warning");
 
     switch(syncWarning->exec()){
     case QMessageBox::Ok:
@@ -620,7 +632,9 @@ sync_widget::sync_widget(QWidget *parent, Qt::WindowFlags f) :
 {
     syncGrid = new QGridLayout();
     QPushButton *syncOneBut = new QPushButton("Google Task");
+    syncOneBut->setIcon(QIcon(":/style/all/images/google.png"));
     QPushButton *syncTwoBut = new QPushButton("DropBox");
+    syncTwoBut->setIcon(QIcon(":/style/all/images/dropbox.png"));
     syncCall = false;
 
     syncGrid->addWidget(syncOneBut, 0, 0);

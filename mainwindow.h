@@ -14,6 +14,7 @@ class QCalendarWidget;
 class QCheckBox;
 class sync_widget;
 class QTimer;
+class QStringList;
 
 
 #include <QtGui/QMainWindow>
@@ -94,7 +95,9 @@ private:
     sync_widget *my_sync_widget;
     QTimer *syncTimer;
 
-    QPushButton *search_button;
+    QLabel *current_list;
+    QStringList list_header;
+
     search *search_gen;
     search_dial *my_search_dial;
 };
