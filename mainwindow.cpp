@@ -213,9 +213,11 @@ void MainWindow::initial()
 
     listMenu->addSeparator();
 
-    display_note = new QAction(QIcon(":/style/all/images/show_hide.png"),tr("&Display/Hide Note"), this);
+    display_note = new QAction(QIcon(":/style/all/images/show_hide.png"),tr("&Display/Hide Note Column"), this);
     listMenu->addAction(display_note);
 
+    sort_note = new QAction(QIcon(":/style/all/images/sort.png"), tr("&Sort/Unsort Notes"), this);
+    listMenu->addAction(sort_note);
     listMenu->addSeparator();
 
     search_for = new QAction(QIcon(":/style/all/images/search.png"), tr("&Search..."), this);
@@ -307,6 +309,9 @@ void MainWindow::initial()
 
     connect(display_note, SIGNAL(triggered()),
             this->my_task_list, SLOT(show_hide_Note()));//the action one in the menu
+
+    connect(sort_note, SIGNAL(triggered()),
+            this->my_task_list, SLOT(sort_unsort_Note()));
 
     connect(new_grocery, SIGNAL(triggered()),
             this->my_task_list, SLOT(grocery()));

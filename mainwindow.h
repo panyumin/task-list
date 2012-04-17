@@ -72,6 +72,7 @@ private:
     QAction *delAct;
     QAction *editAct;
     QAction *display_note;
+    QAction *sort_note;
     QAction *search_for;
 
     QToolBar *listToolBar;
