@@ -45,6 +45,7 @@ public slots:
     void editTask();
     void editTask(QString name, QString tag, QString note, QDate due, QString status, QString plain_note);
     void show_hide_Note();
+    void sort_unsort_Note();
     void changeFont();
     void new_list();
     void new_list(QString);
@@ -61,6 +62,7 @@ public slots:
 private:
     void initial();
     bool show_note;
+    bool sort_note;
 
 
     //QList <QString> t_name;

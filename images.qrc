@@ -39,5 +39,6 @@
         <file>images/sync.png</file>
         <file>images/week.png</file>
         <file>images/main_task.png</file>
+        <file>images/sort.png</file>
     </qresource>
 </RCC>
