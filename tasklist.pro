@@ -219,7 +219,46 @@ OTHER_FILES += \
     images/new_task.png \
     images/search.png \
     images/delete.png \
-    images/edit.png
+    images/edit.png \
+    images/week.png \
+    images/undo.png \
+    images/underline.png \
+    images/sync.png \
+    images/strikethrough.png \
+    images/sort.png \
+    images/show_hide.png \
+    images/search.png \
+    images/save_as.png \
+    images/save.png \
+    images/right.png \
+    images/reminder.png \
+    images/redo.png \
+    images/print.png \
+    images/paste.png \
+    images/open.png \
+    images/number.png \
+    images/new_task.png \
+    images/new.png \
+    images/main_task.png \
+    images/left.png \
+    images/job.png \
+    images/italic.png \
+    images/indent_right.png \
+    images/indent_left.png \
+    images/gtasks.png \
+    images/grocery.png \
+    images/google.png \
+    images/exit.png \
+    images/edit.png \
+    images/dropbox.png \
+    images/delete.png \
+    images/cut.png \
+    images/copy.png \
+    images/clear.png \
+    images/center.png \
+    images/bullet.png \
+    images/bold.png \
+    images/add_service.png
 
 RESOURCES += \
     images.qrc
